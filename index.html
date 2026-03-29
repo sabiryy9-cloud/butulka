@@ -3,193 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Butulka OK - YouTube Music Edition</title>
+    <title>Butulka OK - Full Versiya</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
     <style>
-        body { background: #2c3e50; color: white; font-family: 'Arial', sans-serif; text-align: center; margin: 0; overflow-x: hidden; }
-        .header { background: #e67e22; padding: 15px; font-size: 20px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        .screen { display: none; padding: 20px; }
-        .active { display: block; }
-        input { padding: 15px; margin: 10px; border-radius: 8px; width: 80%; border: none; font-size: 16px; background: #ecf0f1; color: #2c3e50; }
-        button { padding: 15px 30px; background: #d35400; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 10px; transition: 0.3s; }
-        button:active { transform: scale(0.95); }
-        .stats-bar { background: rgba(0,0,0,0.5); padding: 10px; margin: 10px; border-radius: 10px; display: flex; justify-content: space-around; }
-        .room-card { background: #34495e; padding: 20px; margin: 15px auto; border-radius: 15px; border-left: 8px solid #f1c40f; cursor: pointer; max-width: 400px; }
-        .bottle-container { width: 260px; height: 260px; border: 8px double #bdc3c7; border-radius: 50%; margin: 25px auto; position: relative; background: radial-gradient(#34495e, #2c3e50); display: flex; align-items: center; justify-content: center; }
-        #bottle { width: 40px; height: 150px; background: linear-gradient(#27ae60, #2ecc71); border-radius: 15px; border: 3px solid #fff; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); z-index: 5; }
-        .gift-area { background: #1a252f; padding: 15px; border-radius: 15px; margin-top: 15px; }
-        .gift-item { font-size: 25px; padding: 10px; background: #34495e; border-radius: 10px; display: inline-block; cursor: pointer; margin: 5px; }
-        #announcement { color: #f1c40f; font-weight: bold; min-height: 24px; margin: 10px 0; font-size: 18px; }
-        /* Gizli YouTube Player */
-        #yt-player { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
-        .music-ctrl { position: fixed; bottom: 20px; right: 20px; background: #ff0000; color: white; padding: 15px; border-radius: 50%; cursor: pointer; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 100; }
+        body { background: #121212; color: white; font-family: Arial, sans-serif; margin: 0; overflow: hidden; }
+        .header { background: #ee8208; padding: 10px; text-align: center; font-weight: bold; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        /* Oyun Sahəsi */
+        .game-container { position: relative; width: 100vw; height: 80vh; display: flex; justify-content: center; align-items: center; }
+        
+        /* Masa və Oyunçular */
+        .table-wrapper { position: relative; width: 350px; height: 350px; border-radius: 50%; background: radial-gradient(#4d3319, #261a0d); border: 8px solid #5d4037; box-shadow: 0 0 50px #000; }
+        
+        /* Profil Dairələri (Masa ətrafı) */
+        .player-spot { position: absolute; width: 60px; height: 60px; background: #333; border: 3px solid #ee8208; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; overflow: hidden; z-index: 2; }
+        /* Oyunçuların yerləşməsi */
+        .p1 { top: -20px; left: 145px; } .p2 { top: 30px; right: -20px; } .p3 { bottom: 30px; right: -20px; } .p4 { bottom: -20px; left: 145px; }
+        .p5 { bottom: 30px; left: -20px; } .p6 { top: 30px; left: -20px; } .p7 { top: 100px; right: -40px; } .p8 { top: 100px; left: -40px; }
+
+        /* Butulka */
+        #bottle { position: absolute; top: 85px; left: 152px; width: 45px; height: 180px; background: url('https://pngimg.com/uploads/bottle/bottle_PNG2095.png') center/contain no-repeat; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); z-index: 5; }
+
+        /* Statistika Paneli */
+        .side-panel { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 10px; border-left: 5px solid #ee8208; width: 150px; }
+        .stat-line { margin: 5px 0; font-size: 14px; color: #f1c40f; }
+
+        /* Reytinq */
+        .rank-panel { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 10px; width: 150px; font-size: 12px; }
+        .rank-title { border-bottom: 1px solid #ee8208; margin-bottom: 5px; color: #ee8208; text-align: center; }
+
+        /* Hədiyyələr Alt Panel */
+        .bottom-bar { position: fixed; bottom: 0; width: 100%; background: rgba(30,30,30,0.9); padding: 10px; display: flex; justify-content: center; gap: 15px; border-top: 2px solid #ee8208; }
+        .gift-box { text-align: center; cursor: pointer; transition: 0.3s; }
+        .gift-box:hover { transform: scale(1.2); }
+        .gift-icon { font-size: 24px; background: #444; padding: 10px; border-radius: 10px; }
+        .gift-price { font-size: 10px; color: #ee8208; margin-top: 3px; }
+
+        .btn-spin { position: absolute; bottom: 100px; background: linear-gradient(#ff9f43, #ee5253); border: none; color: white; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 5px 0 #b33939; }
+        
+        /* Öpüş Efekti */
+        #kiss-anim { position: absolute; font-size: 100px; display: none; z-index: 100; animation: kissScale 1s ease-out; }
+        @keyframes kissScale { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="yt-player"></div>
-    <div class="music-ctrl" onclick="toggleYTMusic()">🎬</div>
-
     <div class="header">ODNOKLASSNIKI BUTULKA 🍾</div>
 
-    <div id="loginScreen" class="screen active">
-        <h2>Xoş Gəldiniz!</h2>
-        <input type="text" id="nick" placeholder="Adınız..."><br>
-        <input type="password" id="pass" placeholder="Şifrəniz"><br>
-        <button onclick="login()">DAXİL OL 🚀</button>
-        <p style="font-size: 12px; color: #bdc3c7;">Musiqini aktiv etmək üçün daxil olduqdan sonra 🎬 düyməsinə basın.</p>
+    <div id="loginScreen" style="text-align: center; margin-top: 100px;">
+        <input type="text" id="nick" placeholder="Adınız..." style="padding:15px; border-radius:10px;"><br><br>
+        <button class="btn-spin" style="position:static" onclick="login()">OYUNA GİR</button>
     </div>
 
-    <div id="lobbyScreen" class="screen">
-        <div class="stats-bar">
-            <span>👤 <b id="userDisplay"></b></span>
-            <span>💎 Bonus: <b id="userPoints">0</b></span>
+    <div id="gameScreen" style="display:none">
+        <div class="side-panel">
+            <div class="stat-line">👤 <span id="myName">...</span></div>
+            <div class="stat-line">💋 Öpüş: <span id="myKisses">0</span></div>
+            <div class="stat-line">💎 Bonus: <span id="myBonus">0</span></div>
         </div>
-        <div id="leaderboard" style="color: #f1c40f; font-size: 13px; margin-bottom: 10px;">🏆 Reytinq yüklənir...</div>
-        <button onclick="createRoom()" style="background: #27ae60;">+ YENİ MASA AÇ</button>
-        <div id="roomsList">Masa axtarılır...</div>
-    </div>
 
-    <div id="gameScreen" class="screen">
-        <button onclick="goBack()" style="background: #7f8c8d; padding: 5px 15px; float:left;">🏠 Geri</button>
-        <h3 id="roomTitle">Masa: #0000</h3>
-        <div id="announcement">Xoş gəldiniz!</div>
-        <div class="bottle-container"><div id="bottle"></div></div>
-        <button onclick="requestSpin()" style="width: 90%; font-size: 18px;">BUTULKANI FIRLAT 🔄</button>
-        <div class="gift-area">
-            <h4>Hədiyyə Göndər (❤️):</h4>
-            <div class="gift-item" onclick="sendGift('🌹', 10)">🌹<br><small>10</small></div>
-            <div class="gift-item" onclick="sendGift('❤️', 50)">❤️<br><small>50</small></div>
-            <div class="gift-item" onclick="sendGift('🏎️', 200)">🏎️<br><small>200</small></div>
-            <div class="gift-item" onclick="sendGift('👑', 500)">👑<br><small>500</small></div>
+        <div class="rank-panel">
+            <div class="rank-title">🏆 TOP REYTİNQ</div>
+            <div id="rankList"></div>
+        </div>
+
+        <div class="game-container">
+            <div id="kiss-anim">💋</div>
+            <div class="table-wrapper">
+                <div class="player-spot p1">Boş</div>
+                <div class="player-spot p2">Boş</div>
+                <div class="player-spot p3">Boş</div>
+                <div class="player-spot p4">Boş</div>
+                <div class="player-spot p5">Boş</div>
+                <div class="player-spot p6">Boş</div>
+                <div class="player-spot p7">Boş</div>
+                <div class="player-spot p8">Sən</div>
+                <div id="bottle"></div>
+            </div>
+            <button class="btn-spin" onclick="requestSpin()">BUTULKANI FIRLAT</button>
+        </div>
+
+        <div class="bottom-bar">
+            <div class="gift-box" onclick="sendGift('🌹', 10)"><div class="gift-icon">🌹</div><div class="gift-price">10</div></div>
+            <div class="gift-box" onclick="sendGift('❤️', 50)"><div class="gift-icon">❤️</div><div class="gift-price">50</div></div>
+            <div class="gift-box" onclick="sendGift('🏎️', 200)"><div class="gift-icon">🏎️</div><div class="gift-price">200</div></div>
+            <div class="gift-box" onclick="sendGift('👑', 500)"><div class="gift-icon">👑</div><div class="gift-price">500</div></div>
         </div>
     </div>
 
     <script>
-        // FIREBASE AYARLARI
         const firebaseConfig = {
             apiKey: "AIzaSyB9_vB4hMnL8CYHYIwSUjeeyX0LxwDx62M",
-            authDomain: "butulka-acc47.firebaseapp.com",
+            databaseURL: "https://butulka-acc47-default-rtdb.firebaseio.com",
             projectId: "butulka-acc47",
-            storageBucket: "butulka-acc47.firebasestorage.app",
-            messagingSenderId: "738231536356",
-            appId: "1:738231536356:web:1b6a5eb39d60fbae32faf1",
-            databaseURL: "https://butulka-acc47-default-rtdb.firebaseio.com"
+            appId: "1:738231536356:web:1b6a5eb39d60fbae32faf1"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let myNick = "";
-        let myPass = "";
-        let currentRoomId = null;
-        const ADMIN_NAME = "Sabir_Admin";
-        const ADMIN_PASS = "8899";
 
-        // YOUTUBE PLAYER AYARLARI
-        let player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('yt-player', {
-                height: '0',
-                width: '0',
-                videoId: 'jfKfPfyJRdk', // Bura sevdiyin mahnının YouTube kodunu yaza bilərsən
-                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'jfKfPfyJRdk' },
-                events: { 'onReady': onPlayerReady }
-            });
-        }
-        function onPlayerReady(event) { console.log("Musiqi hazırdır."); }
-        function toggleYTMusic() {
-            if (player.getPlayerState() === 1) { player.pauseVideo(); } else { player.playVideo(); }
-        }
-
-        // OYUN FUNKSİYALARI
         function login() {
             myNick = document.getElementById('nick').value.trim();
-            myPass = document.getElementById('pass').value;
-            if(myNick.length < 3) return alert("Ad çox qısadır!");
+            if(myNick === "") return;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('myName').innerText = myNick;
             
-            db.ref('users/' + myNick).once('value', (s) => {
-                if(!s.exists()) {
-                    db.ref('users/' + myNick).set({ pass: myPass, points: 100 });
-                } else if(s.val().pass !== myPass) {
-                    return alert("Yanlış şifrə!");
-                }
-                document.getElementById('userDisplay').innerText = myNick;
-                showScreen('lobbyScreen');
-                syncData();
+            db.ref('users/' + myNick).once('value', s => {
+                if(!s.exists()) db.ref('users/' + myNick).set({kisses: 0, points: 100});
             });
+            sync();
         }
 
-        function syncData() {
-            db.ref('users/' + myNick + '/points').on('value', (s) => {
-                document.getElementById('userPoints').innerText = s.val() || 0;
+        function sync() {
+            db.ref('users/' + myNick).on('value', s => {
+                document.getElementById('myKisses').innerText = s.val().kisses || 0;
+                document.getElementById('myBonus').innerText = s.val().points || 0;
             });
-            listenRooms();
-            listenLeaderboard();
-        }
 
-        function createRoom() {
-            let id = Math.floor(1000 + Math.random() * 9000);
-            db.ref('rooms/' + id).set({ creator: myNick, rotation: 0, msg: "Yeni otaq açıldı!" });
-            joinRoom(id);
-        }
-
-        function joinRoom(id) {
-            currentRoomId = id;
-            showScreen('gameScreen');
-            document.getElementById('roomTitle').innerText = "Masa: #" + id;
-            db.ref('rooms/' + id + '/rotation').on('value', (s) => {
+            db.ref('rooms/global/rotation').on('value', s => {
                 document.getElementById('bottle').style.transform = `rotate(${s.val()}deg)`;
             });
-            db.ref('rooms/' + id + '/msg').on('value', (s) => {
-                document.getElementById('announcement').innerText = s.val() || "";
+
+            db.ref('users').orderByChild('kisses').limitToLast(5).on('value', s => {
+                let html = "";
+                s.forEach(p => { html = `<div>${p.key}: ${p.val().kisses}</div>` + html; });
+                document.getElementById('rankList').innerHTML = html;
             });
         }
 
         function requestSpin() {
-            let newRot = Math.floor(Math.random() * 360) + 2500;
-            db.ref('rooms/' + currentRoomId).update({ 
-                rotation: newRot,
-                msg: myNick + " fırlatdı!"
-            });
+            let rot = Math.floor(Math.random() * 360) + 3600;
+            db.ref('rooms/global').update({ rotation: rot });
+            
+            // Öpüşü artır və animasiya göstər
+            setTimeout(() => {
+                db.ref('users/' + myNick + '/kisses').transaction(k => (k || 0) + 1);
+                let anim = document.getElementById('kiss-anim');
+                anim.style.display = 'block';
+                setTimeout(() => anim.style.display = 'none', 1000);
+            }, 4000);
         }
 
-        function sendGift(type, cost) {
-            db.ref('users/' + myNick + '/points').once('value', (s) => {
-                let currentPoints = s.val() || 0;
-                let isRealAdmin = (myNick === ADMIN_NAME && myPass === ADMIN_PASS);
-                if(currentPoints >= cost || isRealAdmin) {
-                    if(!isRealAdmin) db.ref('users/' + myNick + '/points').set(currentPoints - cost);
-                    db.ref('rooms/' + currentRoomId).update({ msg: "🎁 " + myNick + " " + type + " göndərdi!" });
-                } else { alert("Bonusunuz yetmir!"); }
-            });
+        function sendGift(e, c) {
+            db.ref('users/' + myNick + '/points').transaction(p => (p >= c) ? p - c : p);
+            alert(e + " göndərildi!");
         }
-
-        function listenRooms() {
-            db.ref('rooms').on('value', (s) => {
-                let list = "";
-                s.forEach(room => {
-                    list += `<div class="room-card" onclick="joinRoom(${room.key})"><b>Masa #${room.key}</b><br>Sahib: ${room.val().creator}</div>`;
-                });
-                document.getElementById('roomsList').innerHTML = list || "Otaq yoxdur.";
-            });
-        }
-
-        function listenLeaderboard() {
-            db.ref('users').orderByChild('points').limitToLast(5).on('value', (s) => {
-                let list = "🏆 TOP: ";
-                s.forEach(u => { list += u.key + " (" + u.val().points + ") | "; });
-                document.getElementById('leaderboard').innerHTML = list;
-            });
-        }
-
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function goBack() { showScreen('lobbyScreen'); }
     </script>
 </body>
 </html>
