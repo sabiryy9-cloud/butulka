@@ -3,34 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Butulka Fırlat</title>
+    <title>Butulka OK - YouTube Music Edition</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <style>
-        body { background: #121212; color: white; text-align: center; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .circle { width: 280px; height: 280px; border: 4px dashed #444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; position: relative; }
-        .bottle { width: 45px; height: 160px; background: #27ae60; border-radius: 20px 20px 5px 5px; position: relative; transition: transform 3s cubic-bezier(0.1, 0, 0.1, 1); border: 2px solid #1e8449; }
-        .bottle::after { content: ''; position: absolute; top: -12px; left: 10px; width: 20px; height: 12px; background: #1e8449; border-radius: 3px; }
-        button { padding: 15px 40px; font-size: 18px; background: #e74c3c; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; }
-        button:disabled { background: #555; }
+        body { background: #2c3e50; color: white; font-family: 'Arial', sans-serif; text-align: center; margin: 0; overflow-x: hidden; }
+        .header { background: #e67e22; padding: 15px; font-size: 20px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .screen { display: none; padding: 20px; }
+        .active { display: block; }
+        input { padding: 15px; margin: 10px; border-radius: 8px; width: 80%; border: none; font-size: 16px; background: #ecf0f1; color: #2c3e50; }
+        button { padding: 15px 30px; background: #d35400; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 10px; transition: 0.3s; }
+        button:active { transform: scale(0.95); }
+        .stats-bar { background: rgba(0,0,0,0.5); padding: 10px; margin: 10px; border-radius: 10px; display: flex; justify-content: space-around; }
+        .room-card { background: #34495e; padding: 20px; margin: 15px auto; border-radius: 15px; border-left: 8px solid #f1c40f; cursor: pointer; max-width: 400px; }
+        .bottle-container { width: 260px; height: 260px; border: 8px double #bdc3c7; border-radius: 50%; margin: 25px auto; position: relative; background: radial-gradient(#34495e, #2c3e50); display: flex; align-items: center; justify-content: center; }
+        #bottle { width: 40px; height: 150px; background: linear-gradient(#27ae60, #2ecc71); border-radius: 15px; border: 3px solid #fff; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); z-index: 5; }
+        .gift-area { background: #1a252f; padding: 15px; border-radius: 15px; margin-top: 15px; }
+        .gift-item { font-size: 25px; padding: 10px; background: #34495e; border-radius: 10px; display: inline-block; cursor: pointer; margin: 5px; }
+        #announcement { color: #f1c40f; font-weight: bold; min-height: 24px; margin: 10px 0; font-size: 18px; }
+        /* Gizli YouTube Player */
+        #yt-player { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
+        .music-ctrl { position: fixed; bottom: 20px; right: 20px; background: #ff0000; color: white; padding: 15px; border-radius: 50%; cursor: pointer; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 100; }
     </style>
 </head>
 <body>
-    <h1>Butulka Fırlat</h1>
-    <div class="circle"><div id="bottle" class="bottle"></div></div>
-    <button id="spinBtn" onclick="spin()">FIRLAT</button>
-    <h2 id="msg">Kimin bəxtinə?</h2>
+
+    <div id="yt-player"></div>
+    <div class="music-ctrl" onclick="toggleYTMusic()">🎬</div>
+
+    <div class="header">ODNOKLASSNIKI BUTULKA 🍾</div>
+
+    <div id="loginScreen" class="screen active">
+        <h2>Xoş Gəldiniz!</h2>
+        <input type="text" id="nick" placeholder="Adınız..."><br>
+        <input type="password" id="pass" placeholder="Şifrəniz"><br>
+        <button onclick="login()">DAXİL OL 🚀</button>
+        <p style="font-size: 12px; color: #bdc3c7;">Musiqini aktiv etmək üçün daxil olduqdan sonra 🎬 düyməsinə basın.</p>
+    </div>
+
+    <div id="lobbyScreen" class="screen">
+        <div class="stats-bar">
+            <span>👤 <b id="userDisplay"></b></span>
+            <span>💎 Bonus: <b id="userPoints">0</b></span>
+        </div>
+        <div id="leaderboard" style="color: #f1c40f; font-size: 13px; margin-bottom: 10px;">🏆 Reytinq yüklənir...</div>
+        <button onclick="createRoom()" style="background: #27ae60;">+ YENİ MASA AÇ</button>
+        <div id="roomsList">Masa axtarılır...</div>
+    </div>
+
+    <div id="gameScreen" class="screen">
+        <button onclick="goBack()" style="background: #7f8c8d; padding: 5px 15px; float:left;">🏠 Geri</button>
+        <h3 id="roomTitle">Masa: #0000</h3>
+        <div id="announcement">Xoş gəldiniz!</div>
+        <div class="bottle-container"><div id="bottle"></div></div>
+        <button onclick="requestSpin()" style="width: 90%; font-size: 18px;">BUTULKANI FIRLAT 🔄</button>
+        <div class="gift-area">
+            <h4>Hədiyyə Göndər (❤️):</h4>
+            <div class="gift-item" onclick="sendGift('🌹', 10)">🌹<br><small>10</small></div>
+            <div class="gift-item" onclick="sendGift('❤️', 50)">❤️<br><small>50</small></div>
+            <div class="gift-item" onclick="sendGift('🏎️', 200)">🏎️<br><small>200</small></div>
+            <div class="gift-item" onclick="sendGift('👑', 500)">👑<br><small>500</small></div>
+        </div>
+    </div>
+
     <script>
-        let rotation = 0;
-        function spin() {
-            const btn = document.getElementById('spinBtn');
-            const bottle = document.getElementById('bottle');
-            const msg = document.getElementById('msg');
-            btn.disabled = true;
-            msg.innerText = "Fırlanır...";
-            let extra = Math.floor(Math.random() * 360) + 1800; 
-            rotation += extra;
-            bottle.style.transform = `rotate(${rotation}deg)`;
-            setTimeout(() => { btn.disabled = false; msg.innerText = "Dayandı!"; }, 3000);
+        // FIREBASE AYARLARI
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9_vB4hMnL8CYHYIwSUjeeyX0LxwDx62M",
+            authDomain: "butulka-acc47.firebaseapp.com",
+            projectId: "butulka-acc47",
+            storageBucket: "butulka-acc47.firebasestorage.app",
+            messagingSenderId: "738231536356",
+            appId: "1:738231536356:web:1b6a5eb39d60fbae32faf1",
+            databaseURL: "https://butulka-acc47-default-rtdb.firebaseio.com"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let myNick = "";
+        let myPass = "";
+        let currentRoomId = null;
+        const ADMIN_NAME = "Sabir_Admin";
+        const ADMIN_PASS = "8899";
+
+        // YOUTUBE PLAYER AYARLARI
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '0',
+                width: '0',
+                videoId: 'jfKfPfyJRdk', // Bura sevdiyin mahnının YouTube kodunu yaza bilərsən
+                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'jfKfPfyJRdk' },
+                events: { 'onReady': onPlayerReady }
+            });
         }
+        function onPlayerReady(event) { console.log("Musiqi hazırdır."); }
+        function toggleYTMusic() {
+            if (player.getPlayerState() === 1) { player.pauseVideo(); } else { player.playVideo(); }
+        }
+
+        // OYUN FUNKSİYALARI
+        function login() {
+            myNick = document.getElementById('nick').value.trim();
+            myPass = document.getElementById('pass').value;
+            if(myNick.length < 3) return alert("Ad çox qısadır!");
+            
+            db.ref('users/' + myNick).once('value', (s) => {
+                if(!s.exists()) {
+                    db.ref('users/' + myNick).set({ pass: myPass, points: 100 });
+                } else if(s.val().pass !== myPass) {
+                    return alert("Yanlış şifrə!");
+                }
+                document.getElementById('userDisplay').innerText = myNick;
+                showScreen('lobbyScreen');
+                syncData();
+            });
+        }
+
+        function syncData() {
+            db.ref('users/' + myNick + '/points').on('value', (s) => {
+                document.getElementById('userPoints').innerText = s.val() || 0;
+            });
+            listenRooms();
+            listenLeaderboard();
+        }
+
+        function createRoom() {
+            let id = Math.floor(1000 + Math.random() * 9000);
+            db.ref('rooms/' + id).set({ creator: myNick, rotation: 0, msg: "Yeni otaq açıldı!" });
+            joinRoom(id);
+        }
+
+        function joinRoom(id) {
+            currentRoomId = id;
+            showScreen('gameScreen');
+            document.getElementById('roomTitle').innerText = "Masa: #" + id;
+            db.ref('rooms/' + id + '/rotation').on('value', (s) => {
+                document.getElementById('bottle').style.transform = `rotate(${s.val()}deg)`;
+            });
+            db.ref('rooms/' + id + '/msg').on('value', (s) => {
+                document.getElementById('announcement').innerText = s.val() || "";
+            });
+        }
+
+        function requestSpin() {
+            let newRot = Math.floor(Math.random() * 360) + 2500;
+            db.ref('rooms/' + currentRoomId).update({ 
+                rotation: newRot,
+                msg: myNick + " fırlatdı!"
+            });
+        }
+
+        function sendGift(type, cost) {
+            db.ref('users/' + myNick + '/points').once('value', (s) => {
+                let currentPoints = s.val() || 0;
+                let isRealAdmin = (myNick === ADMIN_NAME && myPass === ADMIN_PASS);
+                if(currentPoints >= cost || isRealAdmin) {
+                    if(!isRealAdmin) db.ref('users/' + myNick + '/points').set(currentPoints - cost);
+                    db.ref('rooms/' + currentRoomId).update({ msg: "🎁 " + myNick + " " + type + " göndərdi!" });
+                } else { alert("Bonusunuz yetmir!"); }
+            });
+        }
+
+        function listenRooms() {
+            db.ref('rooms').on('value', (s) => {
+                let list = "";
+                s.forEach(room => {
+                    list += `<div class="room-card" onclick="joinRoom(${room.key})"><b>Masa #${room.key}</b><br>Sahib: ${room.val().creator}</div>`;
+                });
+                document.getElementById('roomsList').innerHTML = list || "Otaq yoxdur.";
+            });
+        }
+
+        function listenLeaderboard() {
+            db.ref('users').orderByChild('points').limitToLast(5).on('value', (s) => {
+                let list = "🏆 TOP: ";
+                s.forEach(u => { list += u.key + " (" + u.val().points + ") | "; });
+                document.getElementById('leaderboard').innerHTML = list;
+            });
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function goBack() { showScreen('lobbyScreen'); }
     </script>
 </body>
 </html>
