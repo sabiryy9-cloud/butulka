@@ -1,41 +1,605 @@
+function tamEkranEt() {
+  let element = document.documentElement; // Bütün səhifəni seçir
+
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.webkitRequestFullscreen) { 
+    /* Safari və Chrome üçün */
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) { 
+    /* Internet Explorer üçün */
+    element.msRequestFullscreen();
+  }
+}
+<button onclick="tamEkranEt()">Tam Ekran Rejiminə Keç</button>
 <!DOCTYPE html>
-<html>
+<html lang="az">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sadə Görünüş</title>
     <style>
-        body { background: #1a1a1a; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .game-board { 
-            width: 350px; height: 350px; 
-            background: #a67c52; /* Orijinal masa rəngi */
-            border: 15px solid #5d4037; 
-            border-radius: 50%; 
+        /* Ekranı sıfırlamaq */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html { 
+            width: 100%; height: 100%; 
+            overflow: hidden;
+            /* Taxta teksturalı fon */
+            background: #e4c9ac;
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Oyun sahəsi konteyneri */
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: relative;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
         }
-        .bottle {
-            width: 50px; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(0deg);
-            transition: transform 3s cubic-bezier(0.1, 0, 0.1, 1);
-        }
-        .spin-btn {
-            position: absolute; bottom: 50px; padding: 15px 40px;
-            background: #ff9800; color: white; border: none;
-            border-radius: 25px; font-weight: bold; cursor: pointer;
+
+        /* Yaşıl butulka vizualı */
+        .bottle-image {
+            height: 200px; /* Butulkanın hündürlüyü */
+            width: auto;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
-    <div class="game-board">
-        <img src="https://i.imgur.com/vHqLh7S.png" class="bottle" id="bottle">
-    </div>
-    <button class="spin-btn" onclick="spin()">FIRLAT</button>
 
-    <script>
-        let deg = 0;
-        function spin() {
-            deg += Math.floor(Math.random() * 360) + 1800;
-            document.getElementById('bottle').style.transform = `translate(-50%, -50%) rotate(${deg}deg)`;
-        }
-    </script>
+    <div class="container">
+        <img src="https://i.imgur.com/8YvUoH2.png" class="bottle-image" alt="green bottle">
+    </div>
+
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>12 Nəfərlik Otaq</title>
+    <style>
+        /* Səhifəni tam doldurmaq */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html { 
+            width: 100%; height: 100%; 
+            overflow: hidden;
+            /* Taxta teksturalı fon */
+            background: #e4c9ac;
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
+        /* Oyun sahəsi - 12 nəfərin yerləşəcəyi mərkəz */
+        .game-area {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Mərkəzdəki yaşıl butulka */
+        .bottle-img {
+            height: 130px;
+            width: auto;
+            z-index: 5;
+        }
+
+        /* Oyunçu yerləri (12 ədəd kvadrat) */
+        .slot {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 2px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+        }
+
+        /* 12 nəfərin dairəvi koordinatları */
+        .s1  { transform: rotate(0deg)   translate(140px) rotate(0deg); }
+        .s2  { transform: rotate(30deg)  translate(140px) rotate(-30deg); }
+        .s3  { transform: rotate(60deg)  translate(140px) rotate(-60deg); }
+        .s4  { transform: rotate(90deg)  translate(140px) rotate(-90deg); }
+        .s5  { transform: rotate(120deg) translate(140px) rotate(-120deg); }
+        .s6  { transform: rotate(150deg) translate(140px) rotate(-150deg); }
+        .s7  { transform: rotate(180deg) translate(140px) rotate(-180deg); }
+        .s8  { transform: rotate(210deg) translate(140px) rotate(-210deg); }
+        .s9  { transform: rotate(240deg) translate(140px) rotate(-240deg); }
+        .s10 { transform: rotate(270deg) translate(140px) rotate(-270deg); }
+        .s11 { transform: rotate(300deg) translate(140px) rotate(-300deg); }
+        .s12 { transform: rotate(330deg) translate(140px) rotate(-330deg); }
+    </style>
+</head>
+<body>
+
+    <div class="game-area">
+        <img src="https://i.imgur.com/8YvUoH2.png" class="bottle-img">
+
+        <div class="slot s1"></div>
+        <div class="slot s2"></div>
+        <div class="slot s3"></div>
+        <div class="slot s4"></div>
+        <div class="slot s5"></div>
+        <div class="slot s6"></div>
+        <div class="slot s7"></div>
+        <div class="slot s8"></div>
+        <div class="slot s9"></div>
+        <div class="slot s10"></div>
+        <div class="slot s11"></div>
+        <div class="slot s12"></div>
+    </div>
+
+</body>
+</html>
+<div id="chat-container">
+    <div id="messages">
+        <div style="color: gray; font-size: 12px;">Söhbət başladı...</div>
+    </div>
+    
+    <div id="input-area">
+        <input type="text" id="user-msg" placeholder="Mesajınızı yazın...">
+        <button onclick="send()">Göndər</button>
+    </div>
+</div>
+
+<style>
+    #chat-container {
+        width: 100%;
+        height: 250px; /* Təxminən 13 sətir hündürlük */
+        background: #ffffff; /* Ağ arxa fon */
+        border-top: 2px solid #ccc;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+    }
+
+    #messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    #input-area {
+        display: flex;
+        padding: 8px;
+        background: #f1f1f1;
+        border-top: 1px solid #ddd;
+    }
+
+    #user-msg {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        outline: none;
+    }
+
+    button {
+        margin-left: 5px;
+        padding: 8px 15px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #45a049;
+    }
+
+    /* Mesaj mətni stili */
+    .msg-text {
+        font-size: 14px;
+        color: #333;
+        word-wrap: break-word;
+    }
+</style>
+
+<script>
+    function send() {
+        let input = document.getElementById('user-msg');
+        let box = document.getElementById('messages');
+        
+        if (input.value.trim() !== "") {
+            let msgDiv = document.createElement('div');
+            msgDiv.className = 'msg-text';
+            msgDiv.innerHTML = "<b>Siz:</b> " + input.value;
+            box.appendChild(msgDiv);
+            
+            input.value = ""; // İnputu təmizlə
+            box.scrollTop = box.scrollHeight; // Avtomatik aşağı sürüşdür
+        }
+    }
+
+    // Enter düyməsi ilə göndərmə dəstəyi
+    document.getElementById("user-msg").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            send();
+        }
+    });
+</script>
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Profil Seçib Gir</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
+
+        /* --- 1. GİRİŞ EKRANI (Başlanğıcda görünür) --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #3e2723, #1a1a1a);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 100; color: white;
+        }
+
+        /* Profil şəkli üçün boş yer */
+        .profile-preview {
+            width: 120px; height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 4px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px; color: #aaa;
+            object-fit: cover; /* Şəkili tam yerləşdirmək üçün */
+        }
+
+        /* Şəkil yükləmə düyməsi */
+        .upload-label {
+            background: #2196F3; color: white;
+            padding: 12px 24px; border-radius: 25px;
+            cursor: pointer; font-weight: bold;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* "Oyuna Gir" düyməsi */
+        .enter-btn {
+            background: #4CAF50; color: white;
+            padding: 15px 40px; border: none;
+            border-radius: 30px; font-size: 18px;
+            font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* --- 2. OYUN MASASI (Gizli olur, girişdən sonra açılır) --- */
+        #game-screen {
+            display: none; /* Başlanğıcda gizli */
+            width: 100%; height: 100%;
+            background: #e4c9ac;
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .game-area {
+            position: relative; width: 320px; height: 320px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .bottle-img { height: 130px; z-index: 5; }
+
+        .slot {
+            position: absolute; width: 50px; height: 50px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 2px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; /* Şəkil slotdan kənara çıxmasın */
+        }
+
+        /* 12 yerin koordinatları */
+        .s1  { transform: rotate(0deg) translate(140px); }   .s2  { transform: rotate(30deg) translate(140px); }
+        .s3  { transform: rotate(60deg) translate(140px); }  .s4  { transform: rotate(90deg) translate(140px); }
+        .s5  { transform: rotate(120deg) translate(140px); } .s6  { transform: rotate(150deg) translate(140px); }
+        .s7  { transform: rotate(180deg) translate(140px); } .s8  { transform: rotate(210deg) translate(140px); }
+        .s9  { transform: rotate(240deg) translate(140px); } .s10 { transform: rotate(270deg) translate(140px); }
+        .s11 { transform: rotate(300deg) translate(140px); }.s12 { transform: rotate(330deg) translate(140px); }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <h1 style="margin-bottom: 20px;">Xoş Gəldiniz!</h1>
+        
+        <div class="profile-preview" id="profilePreview">
+            <span>Şəkil yoxdur</span>
+        </div>
+        
+        <label for="image-upload" class="upload-label">Profil Şəkli Seç</label>
+        <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="previewImage(event)">
+        
+        <button class="enter-btn" onclick="startGame()">Oyuna Gir</button>
+    </div>
+
+    <div id="game-screen">
+        <div class="game-area">
+            <img src="https://i.imgur.com/8YvUoH2.png" class="bottle-img">
+
+            <div class="slot s1" id="mySlot"></div> <div class="slot s2"></div> <div class="slot s3"></div> <div class="slot s4"></div>
+            <div class="slot s5"></div> <div class="slot s6"></div> <div class="slot s7"></div>
+            <div class="slot s8"></div> <div class="slot s9"></div> <div class="slot s10"></div>
+            <div class="slot s11"></div> <div class="slot s12"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedImageData = null; // Seçilən şəklin datasını saxlamaq üçün
+
+        // 1. Şəkili qabaqcadan görmək funksiyası
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                // Giriş ekranındakı preview yerinə şəkili qoyuruq
+                const preview = document.getElementById('profilePreview');
+                preview.innerHTML = `<img src="${reader.result}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                preview.style.border = "4px solid #4CAF50"; // Seçildiyini bildirmək üçün yaşıl kənar
+                
+                // Şəklin datasını yadda saxlayırıq
+                selectedImageData = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // 2. Oyuna girmə funksiyası ("Oyuna Gir" düyməsinə klikləyəndə)
+        function startGame() {
+            // Əgər şəkil seçilməyibsə, icazə vermirik
+            if (!selectedImageData) {
+                alert("Zəhmət olmasa, əvvəlcə profil şəkli seçin!");
+                return;
+            }
+
+            // A) Giriş ekranını gizlədirik
+            document.getElementById('login-screen').style.display = 'none';
+
+            // B) Oyun masasını açırıq
+            document.getElementById('game-screen').style.display = 'flex';
+
+            // C) Seçilən şəkili masadakı 'mySlot' (s1) yerinə qoyuruq
+            const mySlot = document.getElementById('mySlot');
+            mySlot.innerHTML = `<img src="${selectedImageData}" style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">`;
+            mySlot.style.border
+<div id="login-box">
+    <input type="text" id="username" placeholder="Adınızı bura yazın...">
+    <button onclick="adiYaddaSaxla()">Daxil ol</button>
+</div>
+function adiYaddaSaxla() {
+    // 1. Yazılan adı götür
+    let ad = document.getElementById('username').value;
+
+    if (ad.trim() === "") {
+        alert("Zəhmət olmasa ad yazın!");
+        return;
+    }
+
+    // 2. Adı masadakı oyunçunun altına yaz
+    document.getElementById('player-name-tag').innerText = ad;
+
+    // 3. Giriş pəncərəsini gizlət
+    document.getElementById('login-box').style.display = 'none';
+}
+<div class="player-slot">
+    <div class="photo-square">
+        <img src="profil-sekli.jpg" alt="">
+    </div>
+    
+    <div class="player-name">İstifadəçi Adı</div>
+</div>
+.player-slot {
+    display: flex;
+    flex-direction: column; /* Adı şəklin altına qoyur */
+    align-items: center;    /* Hər şeyi mərkəzə yığır */
+    width: 60px;            /* Kvadratın eni */
+}
+
+.photo-square {
+    width: 55px;
+    height: 55px;
+    background: #ccc;       /* Şəkil yoxdursa boz rəng */
+    border: 2px solid #fff; /* Ağ çərçivə */
+    border-radius: 5px;     /* Küncləri çox az yuvarlaq kvadrat */
+    overflow: hidden;       /* Şəkil kənara çıxmasın */
+}
+
+.photo-square img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* Şəkli kvadratın içinə tam otuzdurur */
+}
+
+.player-name {
+    margin-top: 4px;        /* Şəkil ilə ad arasındakı məsafə */
+    font-size: 11px;
+    font-weight: bold;
+    color: #3e2723;         /* Yazı rəngi */
+    background: rgba(255, 255, 255, 0.8); /* Adın arxa fonu */
+    padding: 2px 5px;
+    border-radius: 3px;
+    white-space: nowrap;    /* Adın tək sətirdə qalması üçün */
+}
+.gender-selection {
+    margin: 15px 0;
+    text-align: center;
+    color: white;
+}
+
+.gender-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.gender-btn input {
+    display: none; /* Radio düyməni gizlədirik */
+}
+
+.custom-radio {
+    padding: 10px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.3s;
+}
+
+/* Seçilən zaman rənglərin dəyişməsi */
+.gender-btn input:checked + .kisi {
+    background: #2196F3;
+    border-color: white;
+}
+
+.gender-btn input:checked + .qadin {
+    background: #E91E63;
+    border-color: white;
+}
+<div class="gender-selection">
+    <p>Cinsiyyətinizi seçin:</p>
+    <div class="gender-options">
+        <label class="gender-btn">
+            <input type="radio" name="gender" value="kisi" checked>
+            <span class="custom-radio kisi">Kişi 👨</span>
+        </label>
+        
+        <label class="gender-btn">
+            <input type="radio" name="gender" value="qadin">
+            <span class="custom-radio qadin">Qadın 👩</span>
+        </label>
+    </div>
+</div>
+<div id="action-panel" class="action-overlay" style="display: none;">
+    <div class="action-box">
+        <p id="action-text">Oyunçunu öpürsən?</p>
+        <div class="btn-group">
+            <button class="btn-op" onclick="karar ver('op')">Öp 💋</button>
+            <button class="btn-opme" onclick="kararver('opme')">Öpmə ❌</button>
+        </div>
+    </div>
+</div>
+.action-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Arxa fonu qaraldır */
+    display: flex; justify-content: center; align-items: center;
+    z-index: 200;
+}
+
+.action-box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 0 20px #ffd54f;
+}
+
+#action-text {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.btn-group {
+    display: flex;
+    gap: 20px;
+}
+
+/* Yaşıl Öp düyməsi */
+.btn-op {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #2e7d32;
+}
+
+/* Qırmızı Öpmə düyməsi */
+.btn-opme {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #c62828;
+}
+
+/* Basılanda düymə effekti */
+.btn-op:active, .btn-opme:active {
+    transform: translateY(3px);
+    box-shadow: none;
+}
+// --- OYUN AYARLARI ---
+let currentAngle = 0;       // Butulkanın hazırki dərəcəsi
+let playerIndex = 0;        // Sıradakı oyunçunun nömrəsi (0-dan 11-ə qədər)
+const totalPlayers = 12;    // Toplam oyunçu sayı
+const rotationTime = 3000;  // 3 saniyə fırlanma
+const waitTime = 9000;      // 9 saniyə gözləmə (Öp/Öpmə üçün)
+
+function butulkaniFirlat() {
+    // 1. Növbəti oyunçuya keçid (Sıra ilə: 0, 1, 2...)
+    playerIndex = (playerIndex + 1) % totalPlayers;
+    
+    // 2. Hər oyunçu arası 30 dərəcədir (360 / 12). 
+    // Üstünə 5 tam dövr (1800 dərəcə) əlavə edirik ki, sürətli fırlansın.
+    let targetAngle = (playerIndex * 30) + 1800;
+    currentAngle += targetAngle;
+
+    const bottle = document.querySelector('.bottle-img');
+    
+    // 3. Butulkanı 3 saniyə ərzində fırladırıq
+    bottle.style.transition = `transform ${rotationTime}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+    bottle.style.transform = `rotate(${currentAngle}deg)`;
+
+    // 4. Fırlanma bitəndən sonra (3 saniyə keçincə)
+    setTimeout(() => {
+        secimiGoster(); // Öp/Öpmə düymələrini ekrana çıxar
+        
+        // 5. 9 saniyə gözlədikdən sonra düymələri gizlət və yenidən fırlat
+        setTimeout(() => {
+            secimiGizle();
+            butulkaniFirlat(); // Avtomatik növbəti dövr başlayır
+        }, waitTime);
+
+    }, rotationTime);
+}
+
+// --- KÖMƏKÇİ FUNKSİYALAR ---
+
+function secimiGoster() {
+    const panel = document.getElementById('action-panel');
+    if(panel) panel.style.display = 'flex';
+}
+
+function secimiGizle() {
+    const panel = document.getElementById('action-panel');
+    if(panel) panel.style.display = 'none';
+}
+
+// Oyunu ilk dəfə başlatmaq üçün (məsələn, düyməyə basanda)
+// butulkaniFirlat();
