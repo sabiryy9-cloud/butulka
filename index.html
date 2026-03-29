@@ -1,605 +1,199 @@
-function tamEkranEt() {
-  let element = document.documentElement; // Bütün səhifəni seçir
-
-  if (element.requestFullscreen) {
-    element.requestFullscreen();
-  } else if (element.webkitRequestFullscreen) { 
-    /* Safari və Chrome üçün */
-    element.webkitRequestFullscreen();
-  } else if (element.msRequestFullscreen) { 
-    /* Internet Explorer üçün */
-    element.msRequestFullscreen();
-  }
-}
-<button onclick="tamEkranEt()">Tam Ekran Rejiminə Keç</button>
 <!DOCTYPE html>
 <html lang="az">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sadə Görünüş</title>
-    <style>
-        /* Ekranı sıfırlamaq */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body, html { 
-            width: 100%; height: 100%; 
-            overflow: hidden;
-            /* Taxta teksturalı fon */
-            background: #e4c9ac;
-            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Oyun sahəsi konteyneri */
-        .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        /* Yaşıl butulka vizualı */
-        .bottle-image {
-            height: 200px; /* Butulkanın hündürlüyü */
-            width: auto;
-            z-index: 1;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <img src="https://i.imgur.com/8YvUoH2.png" class="bottle-image" alt="green bottle">
-    </div>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="az">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>12 Nəfərlik Otaq</title>
-    <style>
-        /* Səhifəni tam doldurmaq */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body, html { 
-            width: 100%; height: 100%; 
-            overflow: hidden;
-            /* Taxta teksturalı fon */
-            background: #e4c9ac;
-            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Oyun sahəsi - 12 nəfərin yerləşəcəyi mərkəz */
-        .game-area {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Mərkəzdəki yaşıl butulka */
-        .bottle-img {
-            height: 130px;
-            width: auto;
-            z-index: 5;
-        }
-
-        /* Oyunçu yerləri (12 ədəd kvadrat) */
-        .slot {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: rgba(0, 0, 0, 0.15);
-            border: 2px dashed rgba(255, 255, 255, 0.4);
-            border-radius: 8px;
-        }
-
-        /* 12 nəfərin dairəvi koordinatları */
-        .s1  { transform: rotate(0deg)   translate(140px) rotate(0deg); }
-        .s2  { transform: rotate(30deg)  translate(140px) rotate(-30deg); }
-        .s3  { transform: rotate(60deg)  translate(140px) rotate(-60deg); }
-        .s4  { transform: rotate(90deg)  translate(140px) rotate(-90deg); }
-        .s5  { transform: rotate(120deg) translate(140px) rotate(-120deg); }
-        .s6  { transform: rotate(150deg) translate(140px) rotate(-150deg); }
-        .s7  { transform: rotate(180deg) translate(140px) rotate(-180deg); }
-        .s8  { transform: rotate(210deg) translate(140px) rotate(-210deg); }
-        .s9  { transform: rotate(240deg) translate(140px) rotate(-240deg); }
-        .s10 { transform: rotate(270deg) translate(140px) rotate(-270deg); }
-        .s11 { transform: rotate(300deg) translate(140px) rotate(-300deg); }
-        .s12 { transform: rotate(330deg) translate(140px) rotate(-330deg); }
-    </style>
-</head>
-<body>
-
-    <div class="game-area">
-        <img src="https://i.imgur.com/8YvUoH2.png" class="bottle-img">
-
-        <div class="slot s1"></div>
-        <div class="slot s2"></div>
-        <div class="slot s3"></div>
-        <div class="slot s4"></div>
-        <div class="slot s5"></div>
-        <div class="slot s6"></div>
-        <div class="slot s7"></div>
-        <div class="slot s8"></div>
-        <div class="slot s9"></div>
-        <div class="slot s10"></div>
-        <div class="slot s11"></div>
-        <div class="slot s12"></div>
-    </div>
-
-</body>
-</html>
-<div id="chat-container">
-    <div id="messages">
-        <div style="color: gray; font-size: 12px;">Söhbət başladı...</div>
-    </div>
-    
-    <div id="input-area">
-        <input type="text" id="user-msg" placeholder="Mesajınızı yazın...">
-        <button onclick="send()">Göndər</button>
-    </div>
-</div>
-
-<style>
-    #chat-container {
-        width: 100%;
-        height: 250px; /* Təxminən 13 sətir hündürlük */
-        background: #ffffff; /* Ağ arxa fon */
-        border-top: 2px solid #ccc;
-        display: flex;
-        flex-direction: column;
-        font-family: Arial, sans-serif;
-    }
-
-    #messages {
-        flex: 1;
-        overflow-y: auto;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    #input-area {
-        display: flex;
-        padding: 8px;
-        background: #f1f1f1;
-        border-top: 1px solid #ddd;
-    }
-
-    #user-msg {
-        flex: 1;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        outline: none;
-    }
-
-    button {
-        margin-left: 5px;
-        padding: 8px 15px;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background: #45a049;
-    }
-
-    /* Mesaj mətni stili */
-    .msg-text {
-        font-size: 14px;
-        color: #333;
-        word-wrap: break-word;
-    }
-</style>
-
-<script>
-    function send() {
-        let input = document.getElementById('user-msg');
-        let box = document.getElementById('messages');
-        
-        if (input.value.trim() !== "") {
-            let msgDiv = document.createElement('div');
-            msgDiv.className = 'msg-text';
-            msgDiv.innerHTML = "<b>Siz:</b> " + input.value;
-            box.appendChild(msgDiv);
-            
-            input.value = ""; // İnputu təmizlə
-            box.scrollTop = box.scrollHeight; // Avtomatik aşağı sürüşdür
-        }
-    }
-
-    // Enter düyməsi ilə göndərmə dəstəyi
-    document.getElementById("user-msg").addEventListener("keyup", function(event) {
-        if (event.key === "Enter") {
-            send();
-        }
-    });
-</script>
-<!DOCTYPE html>
-<html lang="az">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Profil Seçib Gir</title>
+    <title>Butulka Oyunu - Professional Versiya</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
-
-        /* --- 1. GİRİŞ EKRANI (Başlanğıcda görünür) --- */
+        body, html { width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e4c9ac; }
+        
+        /* GİRİŞ EKRANI */
         #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #3e2723, #1a1a1a);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 100; color: white;
+            position: fixed; width: 100%; height: 100%; background: linear-gradient(135deg, #3e2723, #1a1a1a);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: white;
         }
+        .profile-preview { width: 110px; height: 110px; border: 3px dashed rgba(255,255,255,0.4); border-radius: 50%; margin-bottom: 15px; overflow: hidden; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.05); }
+        .profile-preview img { width: 100%; height: 100%; object-fit: cover; }
+        
+        input[type="text"] { padding: 12px; width: 260px; border-radius: 25px; border: none; margin-bottom: 15px; text-align: center; font-size: 16px; outline: none; }
+        
+        .gender-box { display: flex; gap: 15px; margin-bottom: 20px; }
+        .gender-opt { padding: 8px 18px; border-radius: 20px; background: rgba(255,255,255,0.1); cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+        .gender-opt.active-k { background: #2196F3; border-color: white; }
+        .gender-opt.active-q { background: #E91E63; border-color: white; }
 
-        /* Profil şəkli üçün boş yer */
-        .profile-preview {
-            width: 120px; height: 120px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 4px dashed rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px; color: #aaa;
-            object-fit: cover; /* Şəkili tam yerləşdirmək üçün */
-        }
+        .btn { padding: 12px 25px; border-radius: 25px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .upload-btn { background: #607D8B; color: white; margin-bottom: 15px; font-size: 14px; }
+        .enter-btn { background: #4CAF50; color: white; width: 260px; font-size: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .enter-btn:hover { background: #45a049; transform: scale(1.02); }
 
-        /* Şəkil yükləmə düyməsi */
-        .upload-label {
-            background: #2196F3; color: white;
-            padding: 12px 24px; border-radius: 25px;
-            cursor: pointer; font-weight: bold;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
+        /* OYUN SAHƏSİ */
+        #game-screen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); }
+        .table { position: relative; width: 340px; height: 340px; background: radial-gradient(#d4b595, #a1887f); border: 10px solid #5d4037; border-radius: 50%; box-shadow: 0 15px 40px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
+        .bottle { width: 55px; z-index: 10; transition: transform 3s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.4)); }
 
-        /* "Oyuna Gir" düyməsi */
-        .enter-btn {
-            background: #4CAF50; color: white;
-            padding: 15px 40px; border: none;
-            border-radius: 30px; font-size: 18px;
-            font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
+        /* OYUNÇU SLOTLARI */
+        .player-slot { position: absolute; width: 70px; display: flex; flex-direction: column; align-items: center; transition: 0.5s; }
+        .photo-square { width: 58px; height: 58px; background: #9e9e9e; border: 2px solid #fff; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; font-size: 20px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .photo-square img { width: 100%; height: 100%; object-fit: cover; }
+        .name-box { font-size: 11px; color: #fff; background: rgba(0,0,0,0.7); padding: 2px 8px; margin-top: 5px; border-radius: 5px; font-weight: bold; white-space: nowrap; max-width: 75px; overflow: hidden; }
 
-        /* --- 2. OYUN MASASI (Gizli olur, girişdən sonra açılır) --- */
-        #game-screen {
-            display: none; /* Başlanğıcda gizli */
-            width: 100%; height: 100%;
-            background: #e4c9ac;
-            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-            display: flex; justify-content: center; align-items: center;
-        }
+        /* SLOT KOORDİNATLARI (30 dərəcəlik fərqlə) */
+        .p1 { transform: rotate(0deg) translate(165px) rotate(0deg); }
+        .p2 { transform: rotate(30deg) translate(165px) rotate(-30deg); }
+        .p3 { transform: rotate(60deg) translate(165px) rotate(-60deg); }
+        .p4 { transform: rotate(90deg) translate(165px) rotate(-90deg); }
+        .p5 { transform: rotate(120deg) translate(165px) rotate(-120deg); }
+        .p6 { transform: rotate(150deg) translate(165px) rotate(-150deg); }
+        .p7 { transform: rotate(180deg) translate(165px) rotate(-180deg); }
+        .p8 { transform: rotate(210deg) translate(165px) rotate(-210deg); }
+        .p9 { transform: rotate(240deg) translate(165px) rotate(-240deg); }
+        .p10 { transform: rotate(270deg) translate(165px) rotate(-270deg); }
+        .p11 { transform: rotate(300deg) translate(165px) rotate(-300deg); }
+        .p12 { transform: rotate(330deg) translate(165px) rotate(-330deg); }
 
-        .game-area {
-            position: relative; width: 320px; height: 320px;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        .bottle-img { height: 130px; z-index: 5; }
-
-        .slot {
-            position: absolute; width: 50px; height: 50px;
-            background: rgba(0, 0, 0, 0.15);
-            border: 2px dashed rgba(255, 255, 255, 0.4);
-            border-radius: 8px;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden; /* Şəkil slotdan kənara çıxmasın */
-        }
-
-        /* 12 yerin koordinatları */
-        .s1  { transform: rotate(0deg) translate(140px); }   .s2  { transform: rotate(30deg) translate(140px); }
-        .s3  { transform: rotate(60deg) translate(140px); }  .s4  { transform: rotate(90deg) translate(140px); }
-        .s5  { transform: rotate(120deg) translate(140px); } .s6  { transform: rotate(150deg) translate(140px); }
-        .s7  { transform: rotate(180deg) translate(140px); } .s8  { transform: rotate(210deg) translate(140px); }
-        .s9  { transform: rotate(240deg) translate(140px); } .s10 { transform: rotate(270deg) translate(140px); }
-        .s11 { transform: rotate(300deg) translate(140px); }.s12 { transform: rotate(330deg) translate(140px); }
-
+        /* ÖP/ÖPMƏ PANELİ */
+        #action-panel { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:200; backdrop-filter: blur(5px); }
+        .action-box { background:white; padding:40px; border-radius:25px; text-align:center; box-shadow: 0 0 30px gold; }
+        .btn-op { background:#4CAF50; color:white; border:none; padding:18px 45px; border-radius:15px; margin:15px; font-weight:bold; cursor:pointer; font-size: 20px; box-shadow: 0 5px 0 #2e7d32; }
+        .btn-opme { background:#f44336; color:white; border:none; padding:18px 45px; border-radius:15px; margin:15px; font-weight:bold; cursor:pointer; font-size: 20px; box-shadow: 0 5px 0 #c62828; }
+        .btn-op:active, .btn-opme:active { transform: translateY(4px); box-shadow: none; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h1 style="margin-bottom: 20px;">Xoş Gəldiniz!</h1>
+        <h2 style="margin-bottom: 20px; letter-spacing: 2px;">BUTULKA OYUNU</h2>
+        <div class="profile-preview" id="preview">👤</div>
+        <button class="btn upload-btn" onclick="document.getElementById('imgInp').click()">Şəkil Seç (İstəyə bağlı)</button>
+        <input type="file" id="imgInp" hidden onchange="handleImg(event)">
         
-        <div class="profile-preview" id="profilePreview">
-            <span>Şəkil yoxdur</span>
+        <input type="text" id="userName" placeholder="Adınız (Boş qala bilər)">
+        
+        <div class="gender-box">
+            <div class="gender-opt active-k" id="mOpt" onclick="setGender('kisi')">Kişi 👨</div>
+            <div class="gender-opt" id="fOpt" onclick="setGender('qadin')">Qadın 👩</div>
         </div>
-        
-        <label for="image-upload" class="upload-label">Profil Şəkli Seç</label>
-        <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="previewImage(event)">
-        
-        <button class="enter-btn" onclick="startGame()">Oyuna Gir</button>
+
+        <button class="enter-btn" onclick="joinGame()">OYUNA DAXİL OL</button>
     </div>
 
     <div id="game-screen">
-        <div class="game-area">
-            <img src="https://i.imgur.com/8YvUoH2.png" class="bottle-img">
+        <div class="table">
+            <img src="https://i.imgur.com/8YvUoH2.png" id="bottle" class="bottle">
+            
+            <div class="player-slot p1">
+                <div class="photo-square" id="myPhoto">👤</div>
+                <div class="name-box" id="myName">Siz</div>
+            </div>
 
-            <div class="slot s1" id="mySlot"></div> <div class="slot s2"></div> <div class="slot s3"></div> <div class="slot s4"></div>
-            <div class="slot s5"></div> <div class="slot s6"></div> <div class="slot s7"></div>
-            <div class="slot s8"></div> <div class="slot s9"></div> <div class="slot s10"></div>
-            <div class="slot s11"></div> <div class="slot s12"></div>
+            <div class="player-slot p2"><div class="photo-square">👤</div><div class="name-box">Oyunçu 2</div></div>
+            <div class="player-slot p3"><div class="photo-square">👤</div><div class="name-box">Oyunçu 3</div></div>
+            <div class="player-slot p4"><div class="photo-square">👤</div><div class="name-box">Oyunçu 4</div></div>
+            <div class="player-slot p5"><div class="photo-square">👤</div><div class="name-box">Oyunçu 5</div></div>
+            <div class="player-slot p6"><div class="photo-square">👤</div><div class="name-box">Oyunçu 6</div></div>
+            <div class="player-slot p7"><div class="photo-square">👤</div><div class="name-box">Oyunçu 7</div></div>
+            <div class="player-slot p8"><div class="photo-square">👤</div><div class="name-box">Oyunçu 8</div></div>
+            <div class="player-slot p9"><div class="photo-square">👤</div><div class="name-box">Oyunçu 9</div></div>
+            <div class="player-slot p10"><div class="photo-square">👤</div><div class="name-box">Oyunçu 10</div></div>
+            <div class="player-slot p11"><div class="photo-square">👤</div><div class="name-box">Oyunçu 11</div></div>
+            <div class="player-slot p12"><div class="photo-square">👤</div><div class="name-box">Oyunçu 12</div></div>
+        </div>
+    </div>
+
+    <div id="action-panel">
+        <div class="action-box">
+            <h2 id="action-title" style="margin-bottom: 10px;">Butulka Dayandı!</h2>
+            <p style="margin-bottom: 20px; color: #666;">9 saniyə ərzində qərar verin:</p>
+            <button class="btn-op" onclick="finishAction('op')">Öp 💋</button>
+            <button class="btn-opme" onclick="finishAction('opme')">Öpmə ❌</button>
         </div>
     </div>
 
     <script>
-        let selectedImageData = null; // Seçilən şəklin datasını saxlamaq üçün
+        let imgData = null;
+        let selectedGender = 'kisi';
+        let angle = 0;
+        let isSpinning = false;
 
-        // 1. Şəkili qabaqcadan görmək funksiyası
-        function previewImage(event) {
+        function handleImg(e) {
             const reader = new FileReader();
-            reader.onload = function() {
-                // Giriş ekranındakı preview yerinə şəkili qoyuruq
-                const preview = document.getElementById('profilePreview');
-                preview.innerHTML = `<img src="${reader.result}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-                preview.style.border = "4px solid #4CAF50"; // Seçildiyini bildirmək üçün yaşıl kənar
-                
-                // Şəklin datasını yadda saxlayırıq
-                selectedImageData = reader.result;
+            reader.onload = () => {
+                imgData = reader.result;
+                document.getElementById('preview').innerHTML = `<img src="${imgData}">`;
             };
-            reader.readAsDataURL(event.target.files[0]);
+            reader.readAsDataURL(e.target.files[0]);
         }
 
-        // 2. Oyuna girmə funksiyası ("Oyuna Gir" düyməsinə klikləyəndə)
-        function startGame() {
-            // Əgər şəkil seçilməyibsə, icazə vermirik
-            if (!selectedImageData) {
-                alert("Zəhmət olmasa, əvvəlcə profil şəkli seçin!");
-                return;
-            }
+        function setGender(g) {
+            selectedGender = g;
+            document.getElementById('mOpt').className = g === 'kisi' ? 'gender-opt active-k' : 'gender-opt';
+            document.getElementById('fOpt').className = g === 'qadin' ? 'gender-opt active-q' : 'gender-opt';
+        }
 
-            // A) Giriş ekranını gizlədirik
+        function joinGame() {
+            let name = document.getElementById('userName').value.trim();
+            if(name === "") name = "Qonaq";
+
+            // Ekranları dəyiş
             document.getElementById('login-screen').style.display = 'none';
-
-            // B) Oyun masasını açırıq
             document.getElementById('game-screen').style.display = 'flex';
 
-            // C) Seçilən şəkili masadakı 'mySlot' (s1) yerinə qoyuruq
-            const mySlot = document.getElementById('mySlot');
-            mySlot.innerHTML = `<img src="${selectedImageData}" style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">`;
-            mySlot.style.border
-<div id="login-box">
-    <input type="text" id="username" placeholder="Adınızı bura yazın...">
-    <button onclick="adiYaddaSaxla()">Daxil ol</button>
-</div>
-function adiYaddaSaxla() {
-    // 1. Yazılan adı götür
-    let ad = document.getElementById('username').value;
+            // Profil məlumatlarını yerləşdir
+            const myPhoto = document.getElementById('myPhoto');
+            const myName = document.getElementById('myName');
+            
+            if(imgData) {
+                myPhoto.innerHTML = `<img src="${imgData}">`;
+            } else {
+                myPhoto.innerText = selectedGender === 'kisi' ? '👨' : '👩';
+                myPhoto.style.background = selectedGender === 'kisi' ? '#2196F3' : '#E91E63';
+            }
+            
+            myName.innerText = name;
 
-    if (ad.trim() === "") {
-        alert("Zəhmət olmasa ad yazın!");
-        return;
-    }
+            // ADMIN BONUSU (Sonsuzluq)
+            if(name === "Admin777") {
+                alert("Xoş gəldin SAHİB! Sonsuz bonus və panel aktivdir.");
+                document.body.innerHTML += `<div style="position:fixed; top:10px; right:10px; background:gold; color:black; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; z-index:1000; border:2px solid #000;" onclick="alert('Admin Menyu: Bütün yetkilər aktivdir!')">👑 ADMIN PANEL</div>`;
+            }
 
-    // 2. Adı masadakı oyunçunun altına yaz
-    document.getElementById('player-name-tag').innerText = ad;
+            // Oyunu başlat
+            setTimeout(rotateBottle, 1500);
+        }
 
-    // 3. Giriş pəncərəsini gizlət
-    document.getElementById('login-box').style.display = 'none';
-}
-<div class="player-slot">
-    <div class="photo-square">
-        <img src="profil-sekli.jpg" alt="">
-    </div>
-    
-    <div class="player-name">İstifadəçi Adı</div>
-</div>
-.player-slot {
-    display: flex;
-    flex-direction: column; /* Adı şəklin altına qoyur */
-    align-items: center;    /* Hər şeyi mərkəzə yığır */
-    width: 60px;            /* Kvadratın eni */
-}
+        function rotateBottle() {
+            if(isSpinning) return;
+            isSpinning = true;
 
-.photo-square {
-    width: 55px;
-    height: 55px;
-    background: #ccc;       /* Şəkil yoxdursa boz rəng */
-    border: 2px solid #fff; /* Ağ çərçivə */
-    border-radius: 5px;     /* Küncləri çox az yuvarlaq kvadrat */
-    overflow: hidden;       /* Şəkil kənara çıxmasın */
-}
+            // Hər dəfə növbəti oyunçu üçün 30 dərəcə + bir neçə tam dövr
+            angle += 1800 + (Math.floor(Math.random() * 12) * 30);
+            const bottle = document.getElementById('bottle');
+            bottle.style.transform = `rotate(${angle}deg)`;
 
-.photo-square img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;      /* Şəkli kvadratın içinə tam otuzdurur */
-}
+            // 3 saniyə fırlanma bitdikdən sonra
+            setTimeout(() => {
+                isSpinning = false;
+                showActionPanel();
+            }, 3000);
+        }
 
-.player-name {
-    margin-top: 4px;        /* Şəkil ilə ad arasındakı məsafə */
-    font-size: 11px;
-    font-weight: bold;
-    color: #3e2723;         /* Yazı rəngi */
-    background: rgba(255, 255, 255, 0.8); /* Adın arxa fonu */
-    padding: 2px 5px;
-    border-radius: 3px;
-    white-space: nowrap;    /* Adın tək sətirdə qalması üçün */
-}
-.gender-selection {
-    margin: 15px 0;
-    text-align: center;
-    color: white;
-}
+        function showActionPanel() {
+            document.getElementById('action-panel').style.display = 'flex';
+            // 9 saniyə gözləmə müddəti
+            setTimeout(() => {
+                if(document.getElementById('action-panel').style.display === 'flex') {
+                    finishAction('pass');
+                }
+            }, 9000);
+        }
 
-.gender-options {
-    display: flex;
-    gap: 20px;
-    margin-top: 10px;
-}
-
-.gender-btn input {
-    display: none; /* Radio düyməni gizlədirik */
-}
-
-.custom-radio {
-    padding: 10px 20px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: 0.3s;
-}
-
-/* Seçilən zaman rənglərin dəyişməsi */
-.gender-btn input:checked + .kisi {
-    background: #2196F3;
-    border-color: white;
-}
-
-.gender-btn input:checked + .qadin {
-    background: #E91E63;
-    border-color: white;
-}
-<div class="gender-selection">
-    <p>Cinsiyyətinizi seçin:</p>
-    <div class="gender-options">
-        <label class="gender-btn">
-            <input type="radio" name="gender" value="kisi" checked>
-            <span class="custom-radio kisi">Kişi 👨</span>
-        </label>
-        
-        <label class="gender-btn">
-            <input type="radio" name="gender" value="qadin">
-            <span class="custom-radio qadin">Qadın 👩</span>
-        </label>
-    </div>
-</div>
-<div id="action-panel" class="action-overlay" style="display: none;">
-    <div class="action-box">
-        <p id="action-text">Oyunçunu öpürsən?</p>
-        <div class="btn-group">
-            <button class="btn-op" onclick="karar ver('op')">Öp 💋</button>
-            <button class="btn-opme" onclick="kararver('opme')">Öpmə ❌</button>
-        </div>
-    </div>
-</div>
-.action-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Arxa fonu qaraldır */
-    display: flex; justify-content: center; align-items: center;
-    z-index: 200;
-}
-
-.action-box {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 0 20px #ffd54f;
-}
-
-#action-text {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.btn-group {
-    display: flex;
-    gap: 20px;
-}
-
-/* Yaşıl Öp düyməsi */
-.btn-op {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 5px 0 #2e7d32;
-}
-
-/* Qırmızı Öpmə düyməsi */
-.btn-opme {
-    background: #f44336;
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 5px 0 #c62828;
-}
-
-/* Basılanda düymə effekti */
-.btn-op:active, .btn-opme:active {
-    transform: translateY(3px);
-    box-shadow: none;
-}
-// --- OYUN AYARLARI ---
-let currentAngle = 0;       // Butulkanın hazırki dərəcəsi
-let playerIndex = 0;        // Sıradakı oyunçunun nömrəsi (0-dan 11-ə qədər)
-const totalPlayers = 12;    // Toplam oyunçu sayı
-const rotationTime = 3000;  // 3 saniyə fırlanma
-const waitTime = 9000;      // 9 saniyə gözləmə (Öp/Öpmə üçün)
-
-function butulkaniFirlat() {
-    // 1. Növbəti oyunçuya keçid (Sıra ilə: 0, 1, 2...)
-    playerIndex = (playerIndex + 1) % totalPlayers;
-    
-    // 2. Hər oyunçu arası 30 dərəcədir (360 / 12). 
-    // Üstünə 5 tam dövr (1800 dərəcə) əlavə edirik ki, sürətli fırlansın.
-    let targetAngle = (playerIndex * 30) + 1800;
-    currentAngle += targetAngle;
-
-    const bottle = document.querySelector('.bottle-img');
-    
-    // 3. Butulkanı 3 saniyə ərzində fırladırıq
-    bottle.style.transition = `transform ${rotationTime}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-    bottle.style.transform = `rotate(${currentAngle}deg)`;
-
-    // 4. Fırlanma bitəndən sonra (3 saniyə keçincə)
-    setTimeout(() => {
-        secimiGoster(); // Öp/Öpmə düymələrini ekrana çıxar
-        
-        // 5. 9 saniyə gözlədikdən sonra düymələri gizlət və yenidən fırlat
-        setTimeout(() => {
-            secimiGizle();
-            butulkaniFirlat(); // Avtomatik növbəti dövr başlayır
-        }, waitTime);
-
-    }, rotationTime);
-}
-
-// --- KÖMƏKÇİ FUNKSİYALAR ---
-
-function secimiGoster() {
-    const panel = document.getElementById('action-panel');
-    if(panel) panel.style.display = 'flex';
-}
-
-function secimiGizle() {
-    const panel = document.getElementById('action-panel');
-    if(panel) panel.style.display = 'none';
-}
-
-// Oyunu ilk dəfə başlatmaq üçün (məsələn, düyməyə basanda)
-// butulkaniFirlat();
+        function finishAction(decision) {
+            document.getElementById('action-panel').style.display = 'none';
+            // Seçimdən sonra yenidən fırlanmağa hazırlaş (məsələn 1 saniyə sonra)
+            setTimeout(rotateBottle, 1000);
+        }
+    </script>
+</body>
+</html>
