@@ -1,263 +1,111 @@
-<!DOCTYPE html>
-<html lang="az">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Butulka Oyunu - Professional Versiya</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e4c9ac; }
-        
-        /* GİRİŞ EKRANI */
-        #login-screen {
-            position: fixed; width: 100%; height: 100%; background: linear-gradient(135deg, #3e2723, #1a1a1a);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: white;
-        }
-        .profile-preview { width: 110px; height: 110px; border: 3px dashed rgba(255,255,255,0.4); border-radius: 50%; margin-bottom: 15px; overflow: hidden; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.05); }
-        .profile-preview img { width: 100%; height: 100%; object-fit: cover; }
-        
-        input[type="text"] { padding: 12px; width: 260px; border-radius: 25px; border: none; margin-bottom: 15px; text-align: center; font-size: 16px; outline: none; }
-        
-        .gender-box { display: flex; gap: 15px; margin-bottom: 20px; }
-        .gender-opt { padding: 8px 18px; border-radius: 20px; background: rgba(255,255,255,0.1); cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
-        .gender-opt.active-k { background: #2196F3; border-color: white; }
-        .gender-opt.active-q { background: #E91E63; border-color: white; }
+import tkinter as tk
+from tkinter import messagebox
+import random
+import math
+from PIL import Image, ImageTk
+import pygame
 
-        .btn { padding: 12px 25px; border-radius: 25px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .upload-btn { background: #607D8B; color: white; margin-bottom: 15px; font-size: 14px; }
-        .enter-btn { background: #4CAF50; color: white; width: 260px; font-size: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .enter-btn:hover { background: #45a049; transform: scale(1.02); }
+# Səs sistemi
+pygame.mixer.init()
 
-        /* OYUN SAHƏSİ */
-        #game-screen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); }
-        .table { position: relative; width: 340px; height: 340px; background: radial-gradient(#d4b595, #a1887f); border: 10px solid #5d4037; border-radius: 50%; box-shadow: 0 15px 40px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
-        .bottle { width: 55px; z-index: 10; transition: transform 3s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.4)); }
+# Oyunçular
+players = []
 
-        /* OYUNÇU SLOTLARI */
-        .player-slot { position: absolute; width: 70px; display: flex; flex-direction: column; align-items: center; transition: 0.5s; }
-        .photo-square { width: 58px; height: 58px; background: #9e9e9e; border: 2px solid #fff; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; font-size: 20px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .photo-square img { width: 100%; height: 100%; object-fit: cover; }
-        .name-box { font-size: 11px; color: #fff; background: rgba(0,0,0,0.7); padding: 2px 8px; margin-top: 5px; border-radius: 5px; font-weight: bold; white-space: nowrap; max-width: 75px; overflow: hidden; }
+angle = 0
+spinning = False
 
-        /* SLOT KOORDİNATLARI (30 dərəcəlik fərqlə) */
-        .p1 { transform: rotate(0deg) translate(165px) rotate(0deg); }
-        .p2 { transform: rotate(30deg) translate(165px) rotate(-30deg); }
-        .p3 { transform: rotate(60deg) translate(165px) rotate(-60deg); }
-        .p4 { transform: rotate(90deg) translate(165px) rotate(-90deg); }
-        .p5 { transform: rotate(120deg) translate(165px) rotate(-120deg); }
-        .p6 { transform: rotate(150deg) translate(165px) rotate(-150deg); }
-        .p7 { transform: rotate(180deg) translate(165px) rotate(-180deg); }
-        .p8 { transform: rotate(210deg) translate(165px) rotate(-210deg); }
-        .p9 { transform: rotate(240deg) translate(165px) rotate(-240deg); }
-        .p10 { transform: rotate(270deg) translate(165px) rotate(-270deg); }
-        .p11 { transform: rotate(300deg) translate(165px) rotate(-300deg); }
-        .p12 { transform: rotate(330deg) translate(165px) rotate(-330deg); }
+# UI
+root = tk.Tk()
+root.title("Spin the Bottle PRO+")
+root.geometry("500x700")
+root.config(bg="#1e1e1e")
 
-        /* ÖP/ÖPMƏ PANELİ */
-        #action-panel { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:200; backdrop-filter: blur(5px); }
-        .action-box { background:white; padding:40px; border-radius:25px; text-align:center; box-shadow: 0 0 30px gold; }
-        .btn-op { background:#4CAF50; color:white; border:none; padding:18px 45px; border-radius:15px; margin:15px; font-weight:bold; cursor:pointer; font-size: 20px; box-shadow: 0 5px 0 #2e7d32; }
-        .btn-opme { background:#f44336; color:white; border:none; padding:18px 45px; border-radius:15px; margin:15px; font-weight:bold; cursor:pointer; font-size: 20px; box-shadow: 0 5px 0 #c62828; }
-        .btn-op:active, .btn-opme:active { transform: translateY(4px); box-shadow: none; }
-    </style>
-</head>
-<body>
+# Canvas
+canvas = tk.Canvas(root, width=400, height=400, bg="white", highlightthickness=0)
+canvas.pack(pady=10)
 
-    <div id="login-screen">
-        <h2 style="margin-bottom: 20px; letter-spacing: 2px;">BUTULKA OYUNU</h2>
-        <div class="profile-preview" id="preview">👤</div>
-        <button class="btn upload-btn" onclick="document.getElementById('imgInp').click()">Şəkil Seç (İstəyə bağlı)</button>
-        <input type="file" id="imgInp" hidden onchange="handleImg(event)">
-        
-        <input type="text" id="userName" placeholder="Adınız (Boş qala bilər)">
-        
-        <div class="gender-box">
-            <div class="gender-opt active-k" id="mOpt" onclick="setGender('kisi')">Kişi 👨</div>
-            <div class="gender-opt" id="fOpt" onclick="setGender('qadin')">Qadın 👩</div>
-        </div>
+# Butulka şəkli yüklə
+original_image = Image.open("assets/bottle.png")
+resized = original_image.resize((200, 200))
+bottle_img = ImageTk.PhotoImage(resized)
 
-        <button class="enter-btn" onclick="joinGame()">OYUNA DAXİL OL</button>
-    </div>
+img_obj = canvas.create_image(200, 200, image=bottle_img)
 
-    <div id="game-screen">
-        <div class="table">
-            <img src="https://i.imgur.com/8YvUoH2.png" id="bottle" class="bottle">
-            
-            <div class="player-slot p1">
-                <div class="photo-square" id="myPhoto">👤</div>
-                <div class="name-box" id="myName">Siz</div>
-            </div>
+def rotate_image(a):
+    rotated = original_image.rotate(a)
+    resized = rotated.resize((200, 200))
+    return ImageTk.PhotoImage(resized)
 
-            <div class="player-slot p2"><div class="photo-square">👤</div><div class="name-box">Oyunçu 2</div></div>
-            <div class="player-slot p3"><div class="photo-square">👤</div><div class="name-box">Oyunçu 3</div></div>
-            <div class="player-slot p4"><div class="photo-square">👤</div><div class="name-box">Oyunçu 4</div></div>
-            <div class="player-slot p5"><div class="photo-square">👤</div><div class="name-box">Oyunçu 5</div></div>
-            <div class="player-slot p6"><div class="photo-square">👤</div><div class="name-box">Oyunçu 6</div></div>
-            <div class="player-slot p7"><div class="photo-square">👤</div><div class="name-box">Oyunçu 7</div></div>
-            <div class="player-slot p8"><div class="photo-square">👤</div><div class="name-box">Oyunçu 8</div></div>
-            <div class="player-slot p9"><div class="photo-square">👤</div><div class="name-box">Oyunçu 9</div></div>
-            <div class="player-slot p10"><div class="photo-square">👤</div><div class="name-box">Oyunçu 10</div></div>
-            <div class="player-slot p11"><div class="photo-square">👤</div><div class="name-box">Oyunçu 11</div></div>
-            <div class="player-slot p12"><div class="photo-square">👤</div><div class="name-box">Oyunçu 12</div></div>
-        </div>
-    </div>
+def add_player():
+    name = entry.get()
+    if name:
+        players.append(name)
+        listbox.insert(tk.END, name)
+        entry.delete(0, tk.END)
 
-    <div id="action-panel">
-        <div class="action-box">
-            <h2 id="action-title" style="margin-bottom: 10px;">Butulka Dayandı!</h2>
-            <p style="margin-bottom: 20px; color: #666;">9 saniyə ərzində qərar verin:</p>
-            <button class="btn-op" onclick="finishAction('op')">Öp 💋</button>
-            <button class="btn-opme" onclick="finishAction('opme')">Öpmə ❌</button>
-        </div>
-    </div>
+def remove_player():
+    selected = listbox.curselection()
+    if selected:
+        idx = selected[0]
+        listbox.delete(idx)
+        players.pop(idx)
 
-    <script>
-        let imgData = null;
-        let selectedGender = 'kisi';
-        let angle = 0;
-        let isSpinning = false;
+def spin():
+    global spinning, angle
 
-        function handleImg(e) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                imgData = reader.result;
-                document.getElementById('preview').innerHTML = `<img src="${imgData}">`;
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
+    if spinning or len(players) < 2:
+        messagebox.showwarning("Xəta", "Ən azı 2 oyunçu lazımdır!")
+        return
 
-        function setGender(g) {
-            selectedGender = g;
-            document.getElementById('mOpt').className = g === 'kisi' ? 'gender-opt active-k' : 'gender-opt';
-            document.getElementById('fOpt').className = g === 'qadin' ? 'gender-opt active-q' : 'gender-opt';
-        }
+    spinning = True
+    angle = 0
 
-        function joinGame() {
-            let name = document.getElementById('userName').value.trim();
-            if(name === "") name = "Qonaq";
+    pygame.mixer.Sound("assets/spin.wav").play()
+    rotate()
 
-            // Ekranları dəyiş
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'flex';
+def rotate():
+    global angle, spinning, bottle_img
 
-            // Profil məlumatlarını yerləşdir
-            const myPhoto = document.getElementById('myPhoto');
-            const myName = document.getElementById('myName');
-            
-            if(imgData) {
-                myPhoto.innerHTML = `<img src="${imgData}">`;
-            } else {
-                myPhoto.innerText = selectedGender === 'kisi' ? '👨' : '👩';
-                myPhoto.style.background = selectedGender === 'kisi' ? '#2196F3' : '#E91E63';
-            }
-            
-            myName.innerText = name;
+    if angle < 360 * random.randint(5, 8):
+        angle += random.randint(15, 25)
 
-            // ADMIN BONUSU (Sonsuzluq)
-            if(name === "Admin777") {
-                alert("Xoş gəldin SAHİB! Sonsuz bonus və panel aktivdir.");
-                document.body.innerHTML += `<div style="position:fixed; top:10px; right:10px; background:gold; color:black; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; z-index:1000; border:2px solid #000;" onclick="alert('Admin Menyu: Bütün yetkilər aktivdir!')">👑 ADMIN PANEL</div>`;
-            }
+        bottle_img = rotate_image(angle)
+        canvas.itemconfig(img_obj, image=bottle_img)
 
-            // Oyunu başlat
-            setTimeout(rotateBottle, 1500);
-        }
+        root.after(30, rotate)
+    else:
+        spinning = False
+        select_players()
 
-        function rotateBottle() {
-            if(isSpinning) return;
-            isSpinning = true;
+def select_players():
+    p1, p2 = random.sample(players, 2)
 
-            // Hər dəfə növbəti oyunçu üçün 30 dərəcə + bir neçə tam dövr
-            angle += 1800 + (Math.floor(Math.random() * 12) * 30);
-            const bottle = document.getElementById('bottle');
-            bottle.style.transform = `rotate(${angle}deg)`;
+    mode = random.choice(["Truth", "Dare"])
 
-            // 3 saniyə fırlanma bitdikdən sonra
-            setTimeout(() => {
-                isSpinning = false;
-                showActionPanel();
-            }, 3000);
-        }
+    result_label.config(
+        text=f"{p1} 👉 {mode} seçir\n{p2} 👉 cavab verir"
+    )
 
-        function showActionPanel() {
-            document.getElementById('action-panel').style.display = 'flex';
-            // 9 saniyə gözləmə müddəti
-            setTimeout(() => {
-                if(document.getElementById('action-panel').style.display === 'flex') {
-                    finishAction('pass');
-                }
-            }, 9000);
-        }
+# UI elementləri
+frame = tk.Frame(root, bg="#1e1e1e")
+frame.pack()
 
-        function finishAction(decision) {
-            document.getElementById('action-panel').style.display = 'none';
-            // Seçimdən sonra yenidən fırlanmağa hazırlaş (məsələn 1 saniyə sonra)
-            setTimeout(rotateBottle, 1000);
-        }
-    </script>
-</body>
-</html>
-<div class="bottle-container">
-    <img id="bottle" src="bottle.png" alt="Butulka">
-    
-    <div id="decision-popup" class="on-bottle">
-        <button class="btn-op">Öp 💋</button>
-        <button class="btn-opme">Öpmə ❌</button>
-    </div>
-</div>
-.bottle-container {
-    position: relative; /* Düymələrin butulkaya görə hizalanması üçün */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+entry = tk.Entry(frame, font=("Arial", 12))
+entry.pack(side=tk.LEFT, padx=5)
 
-.on-bottle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Tam mərkəzə gətirir */
-    z-index: 10; /* Butulkanın üstündə durması üçün */
-    display: none; /* Başlanğıcda gizli olur, butulka dayananda açılır */
-    flex-direction: column;
-    gap: 10px;
-}
-<div class="chat-wrapper">
-    <div id="chat-messages">
-        <p><b>Sistem:</b> Oyuna xoş gəldiniz!</p>
-    </div>
-    <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="Mesaj yazın...">
-        <button onclick="sendMessage()">Göndər</button>
-    </div>
-</div>
-.chat-wrapper {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.9);
-    height: 150px;
-    display: flex;
-    flex-direction: column;
-    border-top: 2px solid #ccc;
-}
+add_btn = tk.Button(frame, text="➕", command=add_player)
+add_btn.pack(side=tk.LEFT)
 
-#chat-messages {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 10px;
-    font-size: 14px;
-}
+remove_btn = tk.Button(frame, text="❌", command=remove_player)
+remove_btn.pack(side=tk.LEFT)
 
-.chat-input-area {
-    display: flex;
-    padding: 5px;
-}
+listbox = tk.Listbox(root, height=6)
+listbox.pack(pady=10)
 
-.chat-input-area input {
-    flex-grow: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+spin_btn = tk.Button(root, text="🎯 FIRLAT", command=spin, bg="green", fg="white", font=("Arial", 16))
+spin_btn.pack(pady=15)
+
+result_label = tk.Label(root, text="", font=("Arial", 14), fg="white", bg="#1e1e1e")
+result_label.pack(pady=10)
+
+root.mainloop()
