@@ -1,4 +1,114 @@
 import tkinter as tk
+import random
+import math
+import base64
+from PIL import Image, ImageTk
+import io
+
+# BASE64 bottle image (sadə butulka placeholder)
+bottle_base64 = """
+iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAA3NCSVQICAjb4U/gAAABKElEQVR4
+nO3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAPgZlQAB0lL7WQAAAABJRU5ErkJggg==
+"""
+
+# şəkli decode et
+image_data = base64.b64decode(bottle_base64)
+image = Image.open(io.BytesIO(image_data))
+
+players = []
+angle = 0
+spinning = False
+
+# UI
+root = tk.Tk()
+root.title("Spin the Bottle FULL PRO")
+root.geometry("500x700")
+root.config(bg="#222")
+
+canvas = tk.Canvas(root, width=400, height=400, bg="white")
+canvas.pack(pady=10)
+
+def get_rotated(a):
+    return ImageTk.PhotoImage(image.rotate(a))
+
+img = get_rotated(0)
+img_obj = canvas.create_image(200, 200, image=img)
+
+def add_player():
+    name = entry.get()
+    if name:
+        players.append(name)
+        listbox.insert(tk.END, name)
+        entry.delete(0, tk.END)
+
+def remove_player():
+    sel = listbox.curselection()
+    if sel:
+        index = sel[0]
+        listbox.delete(index)
+        players.pop(index)
+
+def spin():
+    global spinning, angle
+    if spinning or len(players) < 2:
+        return
+    spinning = True
+    angle = 0
+    rotate()
+
+def rotate():
+    global angle, spinning, img
+
+    if angle < 360 * random.randint(5, 9):
+        angle += random.randint(10, 25)
+        img = get_rotated(angle)
+        canvas.itemconfig(img_obj, image=img)
+        root.after(30, rotate)
+    else:
+        spinning = False
+        choose()
+
+def choose():
+    p1, p2 = random.sample(players, 2)
+    mode = random.choice(["Truth", "Dare"])
+
+    result_label.config(
+        text=f"{p1} 👉 {mode}\n{p2} 👉 Cavab verir"
+    )
+
+# UI elementləri
+frame = tk.Frame(root, bg="#222")
+frame.pack()
+
+entry = tk.Entry(frame)
+entry.pack(side=tk.LEFT)
+
+add_btn = tk.Button(frame, text="Elave et", command=add_player)
+add_btn.pack(side=tk.LEFT)
+
+del_btn = tk.Button(frame, text="Sil", command=remove_player)
+del_btn.pack(side=tk.LEFT)
+
+listbox = tk.Listbox(root)
+listbox.pack(pady=10)
+
+spin_btn = tk.Button(root, text="FIRLAT", command=spin, bg="green", fg="white", font=("Arial", 14))
+spin_btn.pack(pady=10)
+
+result_label = tk.Label(root, text="", fg="white", bg="#222", font=("Arial", 14))
+result_label.pack()
+
+root.mainloop()import tkinter as tk
 from tkinter import messagebox
 import random
 import math
