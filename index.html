@@ -1,221 +1,233 @@
-import tkinter as tk
-import random
-import math
-import base64
-from PIL import Image, ImageTk
-import io
+import json
+import os
 
-# BASE64 bottle image (sadə butulka placeholder)
-bottle_base64 = """
-iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAA3NCSVQICAjb4U/gAAABKElEQVR4
-nO3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAPgZlQAB0lL7WQAAAABJRU5ErkJggg==
-"""
+DB_FILE = "database.json"
 
-# şəkli decode et
-image_data = base64.b64decode(bottle_base64)
-image = Image.open(io.BytesIO(image_data))
+def melumatlari_yukle():
+    if not os.path.exists(DB_FILE):
+        return {}
+    with open(DB_FILE, "r") as f:
+        return json.load(f)
 
-players = []
-angle = 0
-spinning = False
+def melumatlari_saxla(data):
+    with open(DB_FILE, "w") as f:
+        json.dump(data, f, indent=4)
 
-# UI
-root = tk.Tk()
-root.title("Spin the Bottle FULL PRO")
-root.geometry("500x700")
-root.config(bg="#222")
+def qeydiyyat():
+    print("\n--- 📝 YENİ HESAB YARAT ---")
+    bazaya_bax = melumatlari_yukle()
+    
+    ad = input("İstifadəçi Adı daxil edin: ").strip()
+    if ad in bazaya_bax:
+        print("❌ Bu Ad artıq istifadə olunur!")
+        return None
+    
+    sifre = input("Şifrə təyin edin: ").strip()
+    if len(sifre) < 4:
+        print("⚠️ Şifrə ən azı 4 simvoldan ibarət olmalıdır!")
+        return None
 
-canvas = tk.Canvas(root, width=400, height=400, bg="white")
-canvas.pack(pady=10)
+    bazaya_bax[ad] = {"sifre": sifre, "xal": 0}
+    melumatlari_saxla(bazaya_bax)
+    print(f"✅ Təbriklər '{ad}', hesabınız yaradıldı!")
+    return ad
 
-def get_rotated(a):
-    return ImageTk.PhotoImage(image.rotate(a))
-
-img = get_rotated(0)
-img_obj = canvas.create_image(200, 200, image=img)
-
-def add_player():
-    name = entry.get()
-    if name:
-        players.append(name)
-        listbox.insert(tk.END, name)
-        entry.delete(0, tk.END)
-
-def remove_player():
-    sel = listbox.curselection()
-    if sel:
-        index = sel[0]
-        listbox.delete(index)
-        players.pop(index)
-
-def spin():
-    global spinning, angle
-    if spinning or len(players) < 2:
-        return
-    spinning = True
-    angle = 0
-    rotate()
-
-def rotate():
-    global angle, spinning, img
-
-    if angle < 360 * random.randint(5, 9):
-        angle += random.randint(10, 25)
-        img = get_rotated(angle)
-        canvas.itemconfig(img_obj, image=img)
-        root.after(30, rotate)
+def daxil_ol():
+    print("\n--- 🔑 HESABA DAXİL OL ---")
+    bazaya_bax = melumatlari_yukle()
+    
+    ad = input("Ad: ").strip()
+    sifre = input("Şifrə: ").strip()
+    
+    if ad in bazaya_bax and bazaya_bax[ad]["sifre"] == sifre:
+        print(f"✅ Xoş gəldiniz, {ad}!")
+        return ad
     else:
-        spinning = False
-        choose()
+        print("❌ Ad və ya Şifrə yanlışdır!")
+        return None
 
-def choose():
-    p1, p2 = random.sample(players, 2)
-    mode = random.choice(["Truth", "Dare"])
+# Əsas Menyu
+def giris_ekrani():
+    while True:
+        print("\n==========================")
+        print("   📸 SUPER FOTO OYUNU   ")
+        print("==========================")
+        print("1. Daxil Ol")
+        print("2. Qeydiyyatdan Keç")
+        print("3. Oyundan Çıx")
+        
+        secim = input("\nSeçiminiz (1/2/3): ")
+        
+        if secim == "1":
+            user = daxil_ol()
+            if user: return user
+        elif secim == "2":
+            qeydiyyat()
+        elif secim == "3":
+            print("Sağ olun, yenə gözləyirik!")
+            exit()
+        else:
+            print("⚠️ Xahiş olunur düzgün seçim edin.")
 
-    result_label.config(
-        text=f"{p1} 👉 {mode}\n{p2} 👉 Cavab verir"
-    )
+# İşə salma
+if __name__ == "__main__":
+    aktiv_istifadeci = giris_ekrani()
+    print(f"\n🚀 Oyun başladı! Aktiv oyunçu: {aktiv_istifadeci}")
+def ana_sehife(istifadeci_adi):
+    while True:
+        print(f"\n================================")
+        print(f"🏠 ANA SƏHİFƏ | İstifadəçi: {istifadeci_adi}")
+        print(f"================================")
+        print("1. 📸 Foto Yüklə (Müsabiqəyə Qoşul)")
+        print("2. 🏆 Liderlər Cədvəli (Reytinq)")
+        print("3. ⭐ Fotolara Səs Ver")
+        print("4. 👤 Profilim")
+        print("5. 🚪 Hesabdan Çıx")
+        print("================================")
+        
+        secim = input("\nKeçmək istədiyiniz bölməni seçin (1-5): ").strip()
+        
+        if secim == "1":
+            foto_yukle_bolmesi(istifadeci_adi)
+        elif secim == "2":
+            reytinq_goster()
+        elif secim == "3":
+            ses_verme_bolmesi(istifadeci_adi)
+        elif secim == "4":
+            profili_goster(istifadeci_adi)
+        elif secim == "5":
+            print("Ana səhifədən çıxılır...")
+            break
+        else:
+            print("⚠️ Yanlış seçim! Zəhmət olmasa 1-dən 5-ə qədər rəqəm daxil edin.")
 
-# UI elementləri
-frame = tk.Frame(root, bg="#222")
-frame.pack()
+# --- Köməkçi Funksiyalar (Hələlik boş saxlayırıq ki, proqram çökməsin) ---
 
-entry = tk.Entry(frame)
-entry.pack(side=tk.LEFT)
+def foto_yukle_bolmesi(user):
+    print(f"\n[Sistem]: {user}, tezliklə foto yükləyə biləcəksən! (Bu bölmə hazırlanır...)")
 
-add_btn = tk.Button(frame, text="Elave et", command=add_player)
-add_btn.pack(side=tk.LEFT)
+def reytinq_goster():
+    print("\n[Sistem]: Hazırda lider yoxdur. İlk fotonu sən yüklə!")
 
-del_btn = tk.Button(frame, text="Sil", command=remove_player)
-del_btn.pack(side=tk.LEFT)
+def ses_verme_bolmesi(user):
+    print(f"\n[Sistem]: {user}, hazırda səs veriləcək foto tapılmadı.")
 
-listbox = tk.Listbox(root)
-listbox.pack(pady=10)
+def profili_goster(user):
+    bazaya_bax = melumatlari_yukle()
+    xal = bazaya_bax[user].get("xal", 0)
+    print(f"\n--- 👤 PROFİLİM ---")
+    print(f"İstifadəçi: {user}")
+    print(f"Topladığın Xal: {xal}")
+    print(f"-------------------")
 
-spin_btn = tk.Button(root, text="FIRLAT", command=spin, bg="green", fg="white", font=("Arial", 14))
-spin_btn.pack(pady=10)
+# --- İşə Salma Hissəsini Yeniləyirik ---
+if __name__ == "__main__":
+    while True:
+        aktiv_istifadeci = giris_ekrani() # Əvvəlki kodda yazdığımız giriş funksiyası
+        if aktiv_istifadeci:
+            ana_sehife(aktiv_istifadeci)
+def ana_sehife(istifadeci_adi):
+    # Bazadan istifadəçinin xüsusi məlumatlarını (foto və nick) çəkirik
+    bazaya_bax = melumatlari_yukle()
+    profil_fotosu = bazaya_bax[istifadeci_adi].get("foto", "📸 Yoxdur")
+    oyunçu_niki = bazaya_bax[istifadeci_adi].get("nick", istifadeci_adi)
+    xal = bazaya_bax[istifadeci_adi].get("xal", 0)
 
-result_label = tk.Label(root, text="", fg="white", bg="#222", font=("Arial", 14))
-result_label.pack()
+    while True:
+        print("\n" + "="*40)
+        print(f"      🖼️  SUPER FOTO - OYUN PANELI")
+        print("="*40)
+        # Burada profil şəkli və məlumatlar görünür
+        print(f"   [ FOTO ]: {profil_fotosu}")
+        print(f"   [ AD   ]: {oyunçu_niki}")
+        print(f"   [ XAL  ]: {xal} ⭐")
+        print("-"*40)
+        print("   1. ▶️ OYUNA BAŞLA")
+        print("   2. 🏆 LİDERLƏR")
+        print("   3. ⚙️ AYARLAR")
+        print("   4. 🚪 ÇIXIŞ")
+        print("="*40)
+        
+        secim = input("\nSeçiminizi edin: ").strip()
+        
+        if secim == "1":
+            oyun_mexanikasi(istifadeci_adi)
+        elif secim == "2":
+            reytinq_siyahisi()
+        elif secim == "3":
+            print("⚙️ Ayarlar bölməsi tezliklə aktiv olacaq...")
+        elif secim == "4":
+            print(f"Görüşənədək, {oyunçu_niki}!")
+            break
+        else:
+            print("⚠️ Yanlış seçim!")
 
-root.mainloop()import tkinter as tk
-from tkinter import messagebox
+def oyun_mexanikasi(user):
+    print(f"\n🚀 {user}, Oyun Hazırlanır... Fotolar yüklənir!")
+    # Növbəti addımda buranı kodlaşdıracağıq
+import time
 import random
-import math
-from PIL import Image, ImageTk
-import pygame
+import os
 
-# Səs sistemi
-pygame.mixer.init()
+def melumatlari_yukle():
+    if not os.path.exists("database.json"): return {}
+    with open("database.json", "r") as f: return json.load(f)
 
-# Oyunçular
-players = []
+def xal_artir(user, miqdar):
+    bazaya_bax = melumatlari_yukle()
+    if user in bazaya_bax:
+        bazaya_bax[user]["xal"] = bazaya_bax[user].get("xal", 0) + miqdar
+        with open("database.json", "w") as f: json.dump(bazaya_bax, f, indent=4)
 
-angle = 0
-spinning = False
+def super_foto_oyunu(user):
+    qizlar = ["Lalə 👩", "Günel 👩", "Aysel 👩", "Deniz 👩"]
+    oglanlar = ["Əli 👦", "Vəli 👦", "Murad 👦", "Kənan 👦"]
 
-# UI
-root = tk.Tk()
-root.title("Spin the Bottle PRO+")
-root.geometry("500x700")
-root.config(bg="#1e1e1e")
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        
+        # Rejim seçimi: Qız oğlanı seçir, yoxsa Oğlan qızı?
+        rejim = random.choice(["qiz_sechir", "oglan_sechir"])
+        
+        if rejim == "qiz_sechir":
+            yuxari = random.choice(qizlar)
+            asagi1 = random.choice(oglanlar)
+            asagi2 = random.choice([o for o in oglanlar if o != asagi1])
+        else:
+            yuxari = random.choice(oglanlar)
+            asagi1 = random.choice(qizlar)
+            asagi2 = random.choice([q for q in qizlar if q != asagi1])
 
-# Canvas
-canvas = tk.Canvas(root, width=400, height=400, bg="white", highlightthickness=0)
-canvas.pack(pady=10)
+        print(f"\n🌟 MƏQSƏD: 9 SANİYƏDƏ TƏXMİN ET! 🌟")
+        print(f"\n      {yuxari} (Yuxarıda)")
+        print("\n   [1] {0}   VS   [2] {1}".format(asagi1, asagi2))
+        print("\n" + "-"*40)
 
-# Butulka şəkli yüklə
-original_image = Image.open("assets/bottle.png")
-resized = original_image.resize((200, 200))
-bottle_img = ImageTk.PhotoImage(resized)
+        start_time = time.time()
+        secim = input(f"\nSəncə {yuxari} kimi seçib 👍 qoyacaq? (1/2): ").strip()
+        end_time = time.time()
+        
+        kecen_vaxt = end_time - start_time
 
-img_obj = canvas.create_image(200, 200, image=bottle_img)
+        if kecen_vaxt > 9:
+            print(f"\n⏰ VAXT BİTDİ! (Sizin vaxt: {round(kecen_vaxt, 1)} san)")
+            time.sleep(2)
+            continue
 
-def rotate_image(a):
-    rotated = original_image.rotate(a)
-    resized = rotated.resize((200, 200))
-    return ImageTk.PhotoImage(resized)
+        # Təsadüfi qalib təyini
+        qalib = random.choice(["1", "2"])
+        secilen_person = asagi1 if qalib == "1" else asagi2
 
-def add_player():
-    name = entry.get()
-    if name:
-        players.append(name)
-        listbox.insert(tk.END, name)
-        entry.delete(0, tk.END)
+        if secim == qalib:
+            print(f"\n✅ DOĞRU! {yuxari} tərəfindən {secilen_person} seçildi 👍")
+            xal_artir(user, 10)
+        else:
+            print(f"\n❌ YANLIŞ! {yuxari} digərini seçdi.")
 
-def remove_player():
-    selected = listbox.curselection()
-    if selected:
-        idx = selected[0]
-        listbox.delete(idx)
-        players.pop(idx)
+        yeniden = input("\nYenidən başlasın? (h/y): ").lower()
+        if yeniden != 'h':
+            break
 
-def spin():
-    global spinning, angle
-
-    if spinning or len(players) < 2:
-        messagebox.showwarning("Xəta", "Ən azı 2 oyunçu lazımdır!")
-        return
-
-    spinning = True
-    angle = 0
-
-    pygame.mixer.Sound("assets/spin.wav").play()
-    rotate()
-
-def rotate():
-    global angle, spinning, bottle_img
-
-    if angle < 360 * random.randint(5, 8):
-        angle += random.randint(15, 25)
-
-        bottle_img = rotate_image(angle)
-        canvas.itemconfig(img_obj, image=bottle_img)
-
-        root.after(30, rotate)
-    else:
-        spinning = False
-        select_players()
-
-def select_players():
-    p1, p2 = random.sample(players, 2)
-
-    mode = random.choice(["Truth", "Dare"])
-
-    result_label.config(
-        text=f"{p1} 👉 {mode} seçir\n{p2} 👉 cavab verir"
-    )
-
-# UI elementləri
-frame = tk.Frame(root, bg="#1e1e1e")
-frame.pack()
-
-entry = tk.Entry(frame, font=("Arial", 12))
-entry.pack(side=tk.LEFT, padx=5)
-
-add_btn = tk.Button(frame, text="➕", command=add_player)
-add_btn.pack(side=tk.LEFT)
-
-remove_btn = tk.Button(frame, text="❌", command=remove_player)
-remove_btn.pack(side=tk.LEFT)
-
-listbox = tk.Listbox(root, height=6)
-listbox.pack(pady=10)
-
-spin_btn = tk.Button(root, text="🎯 FIRLAT", command=spin, bg="green", fg="white", font=("Arial", 16))
-spin_btn.pack(pady=15)
-
-result_label = tk.Label(root, text="", font=("Arial", 14), fg="white", bg="#1e1e1e")
-result_label.pack(pady=10)
-
-root.mainloop()
+if __name__ == "__main__":
+    # Test üçün istifadəçi adı 'Admin' olaraq təyin edilib
+    super_foto_oyunu("Admin")
