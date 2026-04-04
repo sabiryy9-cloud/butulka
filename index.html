@@ -1,274 +1,55 @@
-import json
-import os
-
-DB_FILE = "database.json"
-
-def melumatlari_yukle():
-    if not os.path.exists(DB_FILE):
-        return {}
-    with open(DB_FILE, "r") as f:
-        return json.load(f)
-
-def melumatlari_saxla(data):
-    with open(DB_FILE, "w") as f:
-        json.dump(data, f, indent=4)
-
-def qeydiyyat():
-    print("\n--- 📝 YENİ HESAB YARAT ---")
-    bazaya_bax = melumatlari_yukle()
-    
-    ad = input("İstifadəçi Adı daxil edin: ").strip()
-    if ad in bazaya_bax:
-        print("❌ Bu Ad artıq istifadə olunur!")
-        return None
-    
-    sifre = input("Şifrə təyin edin: ").strip()
-    if len(sifre) < 4:
-        print("⚠️ Şifrə ən azı 4 simvoldan ibarət olmalıdır!")
-        return None
-
-    bazaya_bax[ad] = {"sifre": sifre, "xal": 0}
-    melumatlari_saxla(bazaya_bax)
-    print(f"✅ Təbriklər '{ad}', hesabınız yaradıldı!")
-    return ad
-
-def daxil_ol():
-    print("\n--- 🔑 HESABA DAXİL OL ---")
-    bazaya_bax = melumatlari_yukle()
-    
-    ad = input("Ad: ").strip()
-    sifre = input("Şifrə: ").strip()
-    
-    if ad in bazaya_bax and bazaya_bax[ad]["sifre"] == sifre:
-        print(f"✅ Xoş gəldiniz, {ad}!")
-        return ad
-    else:
-        print("❌ Ad və ya Şifrə yanlışdır!")
-        return None
-
-# Əsas Menyu
-def giris_ekrani():
-    while True:
-        print("\n==========================")
-        print("   📸 SUPER FOTO OYUNU   ")
-        print("==========================")
-        print("1. Daxil Ol")
-        print("2. Qeydiyyatdan Keç")
-        print("3. Oyundan Çıx")
-        
-        secim = input("\nSeçiminiz (1/2/3): ")
-        
-        if secim == "1":
-            user = daxil_ol()
-            if user: return user
-        elif secim == "2":
-            qeydiyyat()
-        elif secim == "3":
-            print("Sağ olun, yenə gözləyirik!")
-            exit()
-        else:
-            print("⚠️ Xahiş olunur düzgün seçim edin.")
-
-# İşə salma
-if __name__ == "__main__":
-    aktiv_istifadeci = giris_ekrani()
-    print(f"\n🚀 Oyun başladı! Aktiv oyunçu: {aktiv_istifadeci}")
-def ana_sehife(istifadeci_adi):
-    while True:
-        print(f"\n================================")
-        print(f"🏠 ANA SƏHİFƏ | İstifadəçi: {istifadeci_adi}")
-        print(f"================================")
-        print("1. 📸 Foto Yüklə (Müsabiqəyə Qoşul)")
-        print("2. 🏆 Liderlər Cədvəli (Reytinq)")
-        print("3. ⭐ Fotolara Səs Ver")
-        print("4. 👤 Profilim")
-        print("5. 🚪 Hesabdan Çıx")
-        print("================================")
-        
-        secim = input("\nKeçmək istədiyiniz bölməni seçin (1-5): ").strip()
-        
-        if secim == "1":
-            foto_yukle_bolmesi(istifadeci_adi)
-        elif secim == "2":
-            reytinq_goster()
-        elif secim == "3":
-            ses_verme_bolmesi(istifadeci_adi)
-        elif secim == "4":
-            profili_goster(istifadeci_adi)
-        elif secim == "5":
-            print("Ana səhifədən çıxılır...")
-            break
-        else:
-            print("⚠️ Yanlış seçim! Zəhmət olmasa 1-dən 5-ə qədər rəqəm daxil edin.")
-
-# --- Köməkçi Funksiyalar (Hələlik boş saxlayırıq ki, proqram çökməsin) ---
-
-def foto_yukle_bolmesi(user):
-    print(f"\n[Sistem]: {user}, tezliklə foto yükləyə biləcəksən! (Bu bölmə hazırlanır...)")
-
-def reytinq_goster():
-    print("\n[Sistem]: Hazırda lider yoxdur. İlk fotonu sən yüklə!")
-
-def ses_verme_bolmesi(user):
-    print(f"\n[Sistem]: {user}, hazırda səs veriləcək foto tapılmadı.")
-
-def profili_goster(user):
-    bazaya_bax = melumatlari_yukle()
-    xal = bazaya_bax[user].get("xal", 0)
-    print(f"\n--- 👤 PROFİLİM ---")
-    print(f"İstifadəçi: {user}")
-    print(f"Topladığın Xal: {xal}")
-    print(f"-------------------")
-
-# --- İşə Salma Hissəsini Yeniləyirik ---
-if __name__ == "__main__":
-    while True:
-        aktiv_istifadeci = giris_ekrani() # Əvvəlki kodda yazdığımız giriş funksiyası
-        if aktiv_istifadeci:
-            ana_sehife(aktiv_istifadeci)
-def ana_sehife(istifadeci_adi):
-    # Bazadan istifadəçinin xüsusi məlumatlarını (foto və nick) çəkirik
-    bazaya_bax = melumatlari_yukle()
-    profil_fotosu = bazaya_bax[istifadeci_adi].get("foto", "📸 Yoxdur")
-    oyunçu_niki = bazaya_bax[istifadeci_adi].get("nick", istifadeci_adi)
-    xal = bazaya_bax[istifadeci_adi].get("xal", 0)
-
-    while True:
-        print("\n" + "="*40)
-        print(f"      🖼️  SUPER FOTO - OYUN PANELI")
-        print("="*40)
-        # Burada profil şəkli və məlumatlar görünür
-        print(f"   [ FOTO ]: {profil_fotosu}")
-        print(f"   [ AD   ]: {oyunçu_niki}")
-        print(f"   [ XAL  ]: {xal} ⭐")
-        print("-"*40)
-        print("   1. ▶️ OYUNA BAŞLA")
-        print("   2. 🏆 LİDERLƏR")
-        print("   3. ⚙️ AYARLAR")
-        print("   4. 🚪 ÇIXIŞ")
-        print("="*40)
-        
-        secim = input("\nSeçiminizi edin: ").strip()
-        
-        if secim == "1":
-            oyun_mexanikasi(istifadeci_adi)
-        elif secim == "2":
-            reytinq_siyahisi()
-        elif secim == "3":
-            print("⚙️ Ayarlar bölməsi tezliklə aktiv olacaq...")
-        elif secim == "4":
-            print(f"Görüşənədək, {oyunçu_niki}!")
-            break
-        else:
-            print("⚠️ Yanlış seçim!")
-
-def oyun_mexanikasi(user):
-    print(f"\n🚀 {user}, Oyun Hazırlanır... Fotolar yüklənir!")
-    # Növbəti addımda buranı kodlaşdıracağıq
 import time
-import random
-import os
-
-def melumatlari_yukle():
-    if not os.path.exists("database.json"): return {}
-    with open("database.json", "r") as f: return json.load(f)
-
-def xal_artir(user, miqdar):
-    bazaya_bax = melumatlari_yukle()
-    if user in bazaya_bax:
-        bazaya_bax[user]["xal"] = bazaya_bax[user].get("xal", 0) + miqdar
-        with open("database.json", "w") as f: json.dump(bazaya_bax, f, indent=4)
-
-def super_foto_oyunu(user):
-    qizlar = ["Lalə 👩", "Günel 👩", "Aysel 👩", "Deniz 👩"]
-    oglanlar = ["Əli 👦", "Vəli 👦", "Murad 👦", "Kənan 👦"]
-
-    while True:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        
-        # Rejim seçimi: Qız oğlanı seçir, yoxsa Oğlan qızı?
-        rejim = random.choice(["qiz_sechir", "oglan_sechir"])
-        
-        if rejim == "qiz_sechir":
-            yuxari = random.choice(qizlar)
-            asagi1 = random.choice(oglanlar)
-            asagi2 = random.choice([o for o in oglanlar if o != asagi1])
-        else:
-            yuxari = random.choice(oglanlar)
-            asagi1 = random.choice(qizlar)
-            asagi2 = random.choice([q for q in qizlar if q != asagi1])
-
-        print(f"\n🌟 MƏQSƏD: 9 SANİYƏDƏ TƏXMİN ET! 🌟")
-        print(f"\n      {yuxari} (Yuxarıda)")
-        print("\n   [1] {0}   VS   [2] {1}".format(asagi1, asagi2))
-        print("\n" + "-"*40)
-
-        start_time = time.time()
-        secim = input(f"\nSəncə {yuxari} kimi seçib 👍 qoyacaq? (1/2): ").strip()
-        end_time = time.time()
-        
-        kecen_vaxt = end_time - start_time
-
-        if kecen_vaxt > 9:
-            print(f"\n⏰ VAXT BİTDİ! (Sizin vaxt: {round(kecen_vaxt, 1)} san)")
-            time.sleep(2)
-            continue
-
-        # Təsadüfi qalib təyini
-        qalib = random.choice(["1", "2"])
-        secilen_person = asagi1 if qalib == "1" else asagi2
-
-        if secim == qalib:
-            print(f"\n✅ DOĞRU! {yuxari} tərəfindən {secilen_person} seçildi 👍")
-            xal_artir(user, 10)
-        else:
-            print(f"\n❌ YANLIŞ! {yuxari} digərini seçdi.")
-
-        yeniden = input("\nYenidən başlasın? (h/y): ").lower()
-        if yeniden != 'h':
-            break
-
-if __name__ == "__main__":
-    # Test üçün istifadəçi adı 'Admin' olaraq təyin edilib
-    super_foto_oyunu("Admin")import time
 import random
 import os
 import json
 from colorama import Fore, Style, init
 
-# Rəngləri aktivləşdiririk
+# Rəngləri və sistemi başlat
 init(autoreset=True)
 
+# --- Məlumat Bazası Funksiyaları ---
+def melumatlari_yukle():
+    if not os.path.exists("database.json"):
+        return {}
+    with open("database.json", "r") as f:
+        return json.load(f)
+
+def melumatlari_saxla(data):
+    with open("database.json", "w") as f:
+        json.dump(data, f, indent=4)
+
+def xal_artir(user, miqdar):
+    bazaya_bax = melumatlari_yukle()
+    if user in bazaya_bax:
+        bazaya_bax[user]["xal"] = bazaya_bax[user].get("xal", 0) + miqdar
+        melumatlari_saxla(bazaya_bax)
+
+# --- Vizual Görünüş ---
 def gorunus_ekrani(yuxari, sol, sag, xal):
     os.system('cls' if os.name == 'nt' else 'clear')
+    QIZ_RENG = Fore.LIGHTMAGENTA_EX
+    OGLAN_RENG = Fore.LIGHTBLUE_EX
     
-    # Rəng təyinləri
-    QIZ_RENG = Fore.LIGHTMAGENTA_EX  # Çəhrayı
-    OGLAN_RENG = Fore.LIGHTBLUE_EX   # Göy
-    XAL_RENG = Fore.YELLOW           # Sarı
-    DIVIDER = Fore.WHITE + "="*50
-
-    print(DIVIDER)
+    print(Fore.WHITE + "="*50)
     print(Fore.CYAN + "           🌟 SUPER FOTO: DUEL 🌟")
-    print(DIVIDER)
-    print(f"  ⏳ LİMİT: 9 san. | {XAL_RENG}🏆 XALIN: {xal} 👍")
+    print(Fore.WHITE + "="*50)
+    print(f"  ⏳ LİMİT: 9 san. | {Fore.YELLOW}🏆 XALIN: {xal} 👍")
     print(Fore.WHITE + "-"*50)
     
-    # Yuxarıdakı obrazın rəngi
     y_reng = QIZ_RENG if "👩" in yuxari else OGLAN_RENG
     print(f"\n                 {y_reng}{yuxari}")
     print(Fore.WHITE + "                   🔽")
     print(Fore.WHITE + "           ____________________")
-    print(Fore.WHITE + "          |                    |")
+    print("          |                    |")
     
-    # Aşağıdakıların rəngi
     s_reng = OGLAN_RENG if "👦" in sol else QIZ_RENG
     r_reng = OGLAN_RENG if "👦" in sag else QIZ_RENG
     
     print(f"    [1] {s_reng}{sol}    {Fore.WHITE}VS    {r_reng}[2] {sag}")
-    print("\n" + DIVIDER)
+    print(Fore.WHITE + "\n" + "="*50)
 
-def oyun_mexanikasi(user):
+# --- Oyun Mexanikası ---
+def oyun_baslat(user):
     qizlar = ["Lalə 👩", "Günel 👩", "Aysel 👩", "Deniz 👩"]
     oglanlar = ["Əli 👦", "Vəli 👦", "Murad 👦", "Kənan 👦"]
 
@@ -276,44 +57,72 @@ def oyun_mexanikasi(user):
         bazaya_bax = melumatlari_yukle()
         xal = bazaya_bax[user].get("xal", 0)
 
-        rejim = random.choice(["qiz_sechir", "oglan_sechir"])
-        if rejim == "qiz_sechir":
-            yuxari, sol, sag = random.choice(qizlar), random.choice(oglanlar), random.choice([o for o in oglanlar])
+        # Rejim seçimi
+        if random.choice([True, False]):
+            yuxari = random.choice(qizlar)
+            sol = random.choice(oglanlar)
+            sag = random.choice([o for o in oglanlar if o != sol])
         else:
-            yuxari, sol, sag = random.choice(oglanlar), random.choice(qizlar), random.choice([q for q in qizlar])
+            yuxari = random.choice(oglanlar)
+            sol = random.choice(qizlar)
+            sag = random.choice([q for q in qizlar if q != sol])
 
         gorunus_ekrani(yuxari, sol, sag, xal)
 
         start_time = time.time()
-        secim = input(f"\n{Fore.GREEN}⌨️  Səncə kim bəyəniləcək? (1/2): ").strip()
+        secim = input(f"\n{Fore.GREEN}⌨️  Səncə kim bəyəniləcək? (1/2) və ya (X) çıxış: ").strip().lower()
+        
+        if secim == 'x': break
+        
         kecen_vaxt = time.time() - start_time
 
         if kecen_vaxt > 9:
-            print(f"\n{Fore.RED}⏰ GECİKDİN! Vaxt bitdi.")
+            print(f"\n{Fore.RED}⏰ GECİKDİN! 9 saniyə keçdi.")
             time.sleep(2)
             continue
 
         qalib = random.choice(["1", "2"])
         if secim == qalib:
-            print(f"\n{Fore.GREEN}✅ DOĞRU! Seçildi 👍 +10 Xal")
+            print(f"\n{Fore.GREEN}✅ DOĞRU! {yuxari} bəyəndi və 👍 qoydu! (+10 Xal)")
             xal_artir(user, 10)
         else:
             print(f"\n{Fore.RED}❌ YANLIŞ! O birini bəyəndi.")
-
+        
         time.sleep(2)
 
-# Qeyd: Bu kodu işlətmək üçün terminalda 'pip install colorama' yazmalısan.
-def gorunus_ekrani(yuxari, sol, sag, xal, qalan_vaxt):
+# --- Giriş Sistemi ---
+def daxil_ol():
     os.system('cls' if os.name == 'nt' else 'clear')
-    print("="*50)
-    print(f"           🌟 SUPER FOTO: DUEL 🌟")
-    print("="*50)
-    print(f"  ⏳ LİMİT: 9 san. | 🏆 XALIN: {xal} 👍")
-    print("-"*50)
-    print(f"\n                 {yuxari}")
-    print("                   🔽")
-    print("           ____________________")
-    print("          |                    |")
-    print(f"    [1] {sol}    VS    [2] {sag}")
-    print("\n" + "="*50)
+    print("--- 🔑 DAXİL OL ---")
+    ad = input("Adınız: ").strip()
+    sifre = input("Şifrəniz: ").strip()
+    
+    db = melumatlari_yukle()
+    if ad in db and db[ad]["sifre"] == sifre:
+        return ad
+    else:
+        print("❌ Səhv ad və ya şifrə!")
+        return None
 
+def qeydiyyat():
+    print("--- 📝 QEYDİYYAT ---")
+    ad = input("Yeni Ad: ").strip()
+    sifre = input("Yeni Şifrə: ").strip()
+    db = melumatlari_yukle()
+    if ad in db:
+        print("❌ Bu ad artıq var!")
+    else:
+        db[ad] = {"sifre": sifre, "xal": 0}
+        melumatlari_saxla(db)
+        print("✅ Qeydiyyat uğurlu!")
+
+# --- Əsas Proqram ---
+if __name__ == "__main__":
+    while True:
+        print("\n1. Giriş\n2. Qeydiyyat\n3. Çıxış")
+        s = input("Seçim: ")
+        if s == "1":
+            u = daxil_ol()
+            if u: oyun_baslat(u)
+        elif s == "2": qeydiyyat()
+        elif s == "3": break
