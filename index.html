@@ -230,4 +230,90 @@ def super_foto_oyunu(user):
 
 if __name__ == "__main__":
     # Test üçün istifadəçi adı 'Admin' olaraq təyin edilib
-    super_foto_oyunu("Admin")
+    super_foto_oyunu("Admin")import time
+import random
+import os
+import json
+from colorama import Fore, Style, init
+
+# Rəngləri aktivləşdiririk
+init(autoreset=True)
+
+def gorunus_ekrani(yuxari, sol, sag, xal):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
+    # Rəng təyinləri
+    QIZ_RENG = Fore.LIGHTMAGENTA_EX  # Çəhrayı
+    OGLAN_RENG = Fore.LIGHTBLUE_EX   # Göy
+    XAL_RENG = Fore.YELLOW           # Sarı
+    DIVIDER = Fore.WHITE + "="*50
+
+    print(DIVIDER)
+    print(Fore.CYAN + "           🌟 SUPER FOTO: DUEL 🌟")
+    print(DIVIDER)
+    print(f"  ⏳ LİMİT: 9 san. | {XAL_RENG}🏆 XALIN: {xal} 👍")
+    print(Fore.WHITE + "-"*50)
+    
+    # Yuxarıdakı obrazın rəngi
+    y_reng = QIZ_RENG if "👩" in yuxari else OGLAN_RENG
+    print(f"\n                 {y_reng}{yuxari}")
+    print(Fore.WHITE + "                   🔽")
+    print(Fore.WHITE + "           ____________________")
+    print(Fore.WHITE + "          |                    |")
+    
+    # Aşağıdakıların rəngi
+    s_reng = OGLAN_RENG if "👦" in sol else QIZ_RENG
+    r_reng = OGLAN_RENG if "👦" in sag else QIZ_RENG
+    
+    print(f"    [1] {s_reng}{sol}    {Fore.WHITE}VS    {r_reng}[2] {sag}")
+    print("\n" + DIVIDER)
+
+def oyun_mexanikasi(user):
+    qizlar = ["Lalə 👩", "Günel 👩", "Aysel 👩", "Deniz 👩"]
+    oglanlar = ["Əli 👦", "Vəli 👦", "Murad 👦", "Kənan 👦"]
+
+    while True:
+        bazaya_bax = melumatlari_yukle()
+        xal = bazaya_bax[user].get("xal", 0)
+
+        rejim = random.choice(["qiz_sechir", "oglan_sechir"])
+        if rejim == "qiz_sechir":
+            yuxari, sol, sag = random.choice(qizlar), random.choice(oglanlar), random.choice([o for o in oglanlar])
+        else:
+            yuxari, sol, sag = random.choice(oglanlar), random.choice(qizlar), random.choice([q for q in qizlar])
+
+        gorunus_ekrani(yuxari, sol, sag, xal)
+
+        start_time = time.time()
+        secim = input(f"\n{Fore.GREEN}⌨️  Səncə kim bəyəniləcək? (1/2): ").strip()
+        kecen_vaxt = time.time() - start_time
+
+        if kecen_vaxt > 9:
+            print(f"\n{Fore.RED}⏰ GECİKDİN! Vaxt bitdi.")
+            time.sleep(2)
+            continue
+
+        qalib = random.choice(["1", "2"])
+        if secim == qalib:
+            print(f"\n{Fore.GREEN}✅ DOĞRU! Seçildi 👍 +10 Xal")
+            xal_artir(user, 10)
+        else:
+            print(f"\n{Fore.RED}❌ YANLIŞ! O birini bəyəndi.")
+
+        time.sleep(2)
+
+# Qeyd: Bu kodu işlətmək üçün terminalda 'pip install colorama' yazmalısan.
+def gorunus_ekrani(yuxari, sol, sag, xal, qalan_vaxt):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("="*50)
+    print(f"           🌟 SUPER FOTO: DUEL 🌟")
+    print("="*50)
+    print(f"  ⏳ LİMİT: 9 san. | 🏆 XALIN: {xal} 👍")
+    print("-"*50)
+    print(f"\n                 {yuxari}")
+    print("                   🔽")
+    print("           ____________________")
+    print("          |                    |")
+    print(f"    [1] {sol}    VS    [2] {sag}")
+    print("\n" + "="*50)
+
